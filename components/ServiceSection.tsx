@@ -1,24 +1,17 @@
 import { FC } from 'react';
-import { Service, Currency } from '@/types/services';
+import { Service } from '@/types/services';
 
 interface ServiceSectionProps {
   services: Service[];
-  currency: Currency;
-  usdRate: number;
   onServiceClick: (service: Service) => void;
 }
 
 export const ServiceSection: FC<ServiceSectionProps> = ({
   services,
-  currency,
-  usdRate,
   onServiceClick,
 }) => {
   const formatPrice = (price: number) => {
-    if (currency === 'USD') {
-      return `$${price.toFixed(2)}`;
-    }
-    return `₽${(price * usdRate).toFixed(2)}`;
+    return `${price.toLocaleString()} ₽`;
   };
 
   return (
@@ -29,25 +22,19 @@ export const ServiceSection: FC<ServiceSectionProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {services.map((service) => (
           <div
-            key={service.name}
-            className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+            key={service.title}
+            className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
             onClick={() => onServiceClick(service)}
           >
-            <h3 className="text-xl font-semibold mb-4">{service.name}</h3>
-            <p className="text-gray-300 mb-4">{service.shortDescription}</p>
-            <div className="flex justify-between items-center">
-              <span className="text-blue-400 font-bold">
-                {formatPrice(service.priceUSD)}
-              </span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onServiceClick(service);
-                }}
-                className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded transition-colors"
-              >
-                Подробнее
-              </button>
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2">{service.title}</h3>
+              <p className="text-gray-400 mb-4">{service.description}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-bold text-primary">
+                  {formatPrice(service.priceRub)}
+                </span>
+                <span className="text-sm text-gray-500">за проект</span>
+              </div>
             </div>
           </div>
         ))}

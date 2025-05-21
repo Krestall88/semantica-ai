@@ -1,23 +1,19 @@
 'use client';
 
 import { FC } from 'react';
-import { Service, Currency } from '@/types/services';
+import { Service } from '@/types/services';
 
 interface ServiceCardProps {
   service: Service;
-  currency: Currency;
-  usdRate: number;
   onClick: () => void;
 }
 
 export const ServiceCard: FC<ServiceCardProps> = ({
   service,
-  currency,
-  usdRate,
   onClick,
 }) => {
-  const price = currency === 'USD' ? Math.round(service.priceRub / usdRate) : service.priceRub;
-  const currencySymbol = currency === 'USD' ? '$' : '₽';
+  const price = service.priceRub;
+  const currencySymbol = '₽';
 
   return (
     <div className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">

@@ -2,26 +2,17 @@
 
 import React from 'react';
 import type { Service } from '@/types/services';
-import type { Currency } from './CurrencySelector';
 
 interface ServiceCardProps {
   service: Service;
   onClick: () => void;
-  currency: Currency;
-  usdRate: number;
 }
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
   onClick,
-  currency,
-  usdRate,
 }) => {
   const formatPrice = (priceRub: number): string => {
-    if (currency === 'USD') {
-      const priceUsd = Math.round(priceRub / usdRate);
-      return `$${priceUsd.toLocaleString()}`;
-    }
     return `${priceRub.toLocaleString()} ₽`;
   };
 

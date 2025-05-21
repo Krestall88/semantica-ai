@@ -1,8 +1,6 @@
 'use client';
 
 import React from 'react';
-import type { Currency } from './CurrencySelector';
-
 interface PricingFeature {
   name: string;
   included: boolean;
@@ -15,8 +13,6 @@ interface PricingCardProps {
   features: PricingFeature[];
   isPopular?: boolean;
   onSelect: () => void;
-  currency: Currency;
-  usdRate: number;
 }
 
 export const PricingCard: React.FC<PricingCardProps> = ({
@@ -26,14 +22,8 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   features,
   isPopular = false,
   onSelect,
-  currency,
-  usdRate,
 }) => {
   const formatPrice = (priceRub: number): string => {
-    if (currency === 'USD') {
-      const priceUsd = Math.round(priceRub / usdRate);
-      return `$${priceUsd.toLocaleString()}`;
-    }
     return `${priceRub.toLocaleString()} ₽`;
   };
   return (

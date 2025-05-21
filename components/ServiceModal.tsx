@@ -18,7 +18,6 @@ interface ServiceModalProps {
   service: Service;
   onClose: () => void;
   currency: Currency;
-  usdRate: number;
   onPrivacyClick?: () => void;
 }
 
@@ -26,7 +25,6 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
   service,
   onClose,
   currency,
-  usdRate,
   onPrivacyClick,
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('details');
@@ -34,10 +32,6 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const formatPrice = (priceRub: number): string => {
-    if (currency === 'USD') {
-      const priceUsd = Math.round(priceRub / usdRate);
-      return `$${priceUsd.toLocaleString()}`;
-    }
     return `${priceRub.toLocaleString()} ₽`;
   };
 

@@ -1,20 +1,15 @@
 'use client';
 
 import { FC, useState } from 'react';
-import { Currency } from '@/types/services';
 
 interface ContactFormProps {
   isOpen: boolean;
   onClose: () => void;
-  currency: Currency;
-  usdRate: number;
 }
 
 export const ContactForm: FC<ContactFormProps> = ({
   isOpen,
   onClose,
-  currency,
-  usdRate,
 }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -36,9 +31,7 @@ export const ContactForm: FC<ContactFormProps> = ({
         body: JSON.stringify({
           name,
           email,
-          message,
-          currency,
-          usdRate,
+          message
         }),
       });
 

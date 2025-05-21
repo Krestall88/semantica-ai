@@ -289,8 +289,6 @@ export default function Home() {
                   key={index}
                   service={service}
                   onClick={() => handleServiceClick(service)}
-                  currency={currency}
-                  usdRate={usdRate}
                 />
               ))}
             </div>
@@ -752,7 +750,6 @@ export default function Home() {
           service={selectedService}
           onClose={handleCloseModal}
           currency={currency}
-          usdRate={usdRate}
           onPrivacyClick={handlePrivacyPolicyClick}
         />
       )}

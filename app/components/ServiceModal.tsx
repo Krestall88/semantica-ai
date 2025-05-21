@@ -1,27 +1,23 @@
 'use client';
 
 import { FC } from 'react';
-import { Service, Currency } from '@/types/services';
+import { Service } from '@/types/services';
 
 interface ServiceModalProps {
   service: Service;
   isOpen: boolean;
   onClose: () => void;
-  currency: Currency;
-  usdRate: number;
 }
 
 export const ServiceModal: FC<ServiceModalProps> = ({
   service,
   isOpen,
   onClose,
-  currency,
-  usdRate,
 }) => {
   if (!isOpen) return null;
 
-  const price = currency === 'USD' ? Math.round(service.priceRub / usdRate) : service.priceRub;
-  const currencySymbol = currency === 'USD' ? '$' : '₽';
+  const price = service.priceRub;
+  const currencySymbol = '₽';
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
