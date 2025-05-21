@@ -18,7 +18,6 @@ export default function Home() {
     price: string;
   } | null>(null);
   const [currency, setCurrency] = useState<Currency>('RUB');
-  const [usdRate, setUsdRate] = useState<number>(90);
   const [showContactForm, setShowContactForm] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
