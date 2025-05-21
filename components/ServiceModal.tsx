@@ -18,14 +18,12 @@ interface ServiceModalProps {
   service: Service;
   onClose: () => void;
   currency: Currency;
-  onPrivacyClick?: () => void;
 }
 
 export const ServiceModal: React.FC<ServiceModalProps> = ({
   service,
   onClose,
   currency,
-  onPrivacyClick,
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('details');
   const [isSubmitted, setIsSubmitted] = useState(false);

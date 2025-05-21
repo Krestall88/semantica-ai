@@ -130,7 +130,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ onClose, onPrivacyClic
               </button>
               
               <div className="text-xs text-gray-500 text-center mt-4">
-                Нажимая "Получить предложение", вы соглашаетесь с {' '}
+                Нажимая &quot;Получить предложение&quot;, вы соглашаетесь с {' '}
                 <button 
                   type="button" 
                   onClick={onPrivacyClick} 

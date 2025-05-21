@@ -1,25 +1,24 @@
 import { FC } from 'react';
+import Link from 'next/link';
 import { Currency } from '@/types/services';
 
 interface HeaderProps {
   currency: Currency;
   onCurrencyChange: (currency: Currency) => void;
-  onUsdRateChange: (rate: number) => void;
   onContactClick: () => void;
 }
 
 export const Header: FC<HeaderProps> = ({
   currency,
   onCurrencyChange,
-  onUsdRateChange,
   onContactClick,
 }) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-opacity-90 bg-gray-900 backdrop-blur-md shadow-lg">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <a href="/" className="text-2xl font-bold text-blue-400 hover:text-blue-300 transition-colors">
+        <Link href="/" className="text-2xl font-bold text-blue-400 hover:text-blue-300 transition-colors">
           Semantica AI
-        </a>
+        </Link>
         <nav className="hidden md:flex space-x-8">
           <a href="#services" className="text-gray-300 hover:text-blue-400 transition-colors">
             Услуги
