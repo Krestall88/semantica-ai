@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ServiceCard } from '../components/ServiceCard';
 import { ServiceModal } from '../components/ServiceModal';
 import { ContactForm } from '../components/ContactForm';
 import { PackageOrderForm } from '../components/PackageOrderForm';

@@ -34,7 +34,7 @@ export async function GET() {
     
     // Find USD rate in the XML response
     const valutes = result.ValCurs?.Valute || [];
-    const usdValute = valutes.find((valute: any) => valute.CharCode?.[0] === 'USD');
+    const usdValute = valutes.find((valute: { CharCode?: string[] }) => valute.CharCode?.[0] === 'USD');
     
     if (!usdValute) {
       throw new Error('USD rate not found in the response');
