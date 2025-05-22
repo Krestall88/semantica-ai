@@ -24,15 +24,6 @@ export const PackageOrderForm: React.FC<PackageOrderFormProps> = ({
   currency,
   usdRate = 0,
 }) => {
-  const formatPrice = (price: string): string => {
-    if (currency === 'USD' && usdRate > 0) {
-      const priceNum = parseInt(price.replace(/\D/g, '')) / usdRate * 1.05; // 5% markup
-      return `$${Math.ceil(priceNum / 5) * 5}`; // Round to nearest 5
-    }
-    return price;
-  };
-  
-  const formattedPrice = formatPrice(price);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -40,6 +31,18 @@ export const PackageOrderForm: React.FC<PackageOrderFormProps> = ({
     description: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  const formatPrice = (priceStr: string): string => {
+    const priceNum = parseFloat(priceStr.replace(/\D/g, ''));
+    
+    if (currency === 'USD' && usdRate > 0) {
+      let priceUsd = (priceNum / usdRate) * 1.05; // 5% markup
+      priceUsd = Math.ceil(priceUsd / 5) * 5; // Round to nearest 5
+      return `$${priceUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+    }
+    
+    return `${priceNum.toLocaleString()} ₽`;
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -95,7 +98,7 @@ export const PackageOrderForm: React.FC<PackageOrderFormProps> = ({
       <div className="bg-[#1A1A1A] rounded-lg p-8 max-w-2xl mx-auto">
         <h2 className="text-3xl font-bold mb-2">{packageName}</h2>
         <p className="text-gray-300 mb-2">{packageDescription}</p>
-        <div className="text-2xl font-bold text-primary mb-6">{formattedPrice}</div>
+        <div className="text-2xl font-bold text-primary mb-6">{formatPrice(price)}</div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

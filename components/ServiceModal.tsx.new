@@ -34,8 +34,9 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
 
   const formatPrice = (priceRub: number): string => {
     if (currency === 'USD' && usdRate > 0) {
-      const priceUsd = priceRub / usdRate * 1.05; // 5% наценка
-      return `$${Math.ceil(priceUsd / 5) * 5}`; // Округление до 5
+      let priceUsd = (priceRub / usdRate) * 1.05; // 5% markup
+      priceUsd = Math.ceil(priceUsd / 5) * 5; // Round to nearest 5
+      return `$${priceUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
     }
     return `${priceRub.toLocaleString()} ₽`;
   };
@@ -113,46 +114,28 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
               </ul>
             </div>
 
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-4">Для кого:</h3>
-              <ul className="space-y-2">
-                {service.forWhom.map((item, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="flex items-center justify-between mt-8">
+            <div className="flex justify-between items-center border-t border-gray-800 pt-6">
               <div>
-                <div className="text-sm text-gray-500 mb-1">Цена:</div>
-                <div className="text-2xl font-bold text-primary">
-                  от {formatPrice(service.priceRub)}
-                </div>
+                <span className="text-2xl font-bold text-primary">{formatPrice(service.price)}</span>
+                {service.oldPrice && (
+                  <span className="ml-2 text-gray-500 line-through">
+                    {formatPrice(service.oldPrice)}
+                  </span>
+                )}
               </div>
-              <div className="flex gap-4">
-                <button
-                  onClick={handleOrderClick}
-                  className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  Заказать
-                </button>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Закрыть
-                </button>
-              </div>
+              <button
+                onClick={handleOrderClick}
+                className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Оставить заявку
+              </button>
             </div>
           </>
         ) : (
           <OrderForm
-            service={service}
-            onClose={handleBackToDetails}
+            serviceName={service.title}
+            price={formatPrice(service.price)}
+            onBack={handleBackToDetails}
             onSubmit={handleOrderSubmit}
             isLoading={isLoading}
           />

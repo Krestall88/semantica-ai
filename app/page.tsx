@@ -10,6 +10,7 @@ import { PrivacyPolicy } from '../components/PrivacyPolicy';
 import { CurrencySelector, type Currency } from '../components/CurrencySelector';
 import { services } from '@/data/services';
 import type { Service } from '@/types/service';
+import { ServiceSection } from '../components/ServiceSection';
 
 export default function Home() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -19,8 +20,37 @@ export default function Home() {
     price: string;
   } | null>(null);
   const [currency, setCurrency] = useState<Currency>('RUB');
+  const [usdRate, setUsdRate] = useState<number>(0);
   const [showContactForm, setShowContactForm] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const formatPrice = (price: string): string => {
+    if (currency === 'USD' && usdRate > 0) {
+      const priceNum = parseInt(price.replace(/\D/g, '')) / usdRate * 1.05; // 5% наценка
+      return `$${Math.ceil(priceNum / 5) * 5}`; // Округление до 5
+    }
+    return price;
+  };
+
+  useEffect(() => {
+    // Fetch USD to RUB exchange rate from our API
+    const fetchUsdRate = async () => {
+      try {
+        const response = await fetch('/api/usd-rate');
+        const data = await response.json();
+        setUsdRate(data.rate || 0);
+      } catch (error) {
+        console.error('Failed to fetch USD rate:', error);
+        setUsdRate(0);
+      }
+    };
+
+    fetchUsdRate();
+    // Refresh rate every 5 minutes
+    const interval = setInterval(fetchUsdRate, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const handleOpenContactForm = () => {
@@ -31,7 +61,7 @@ export default function Home() {
 
     return () => {
       window.removeEventListener('openContactForm', handleOpenContactForm as EventListener);
-    }
+    };
   }, []);
 
   const handleServiceClick = (service: Service) => {
@@ -109,7 +139,7 @@ export default function Home() {
           </div>
 
           <div className="hidden md:flex space-x-8 items-center">
-            <a href="#process" className="text-gray-300 hover:text-primary transition-colors">Как мы работаем</a>
+            <a href="#why-us" className="text-gray-300 hover:text-primary transition-colors">Как мы работаем</a>
             <a href="#services" className="text-gray-300 hover:text-primary transition-colors">Услуги</a>
             <CurrencySelector
               currency={currency}
@@ -124,11 +154,46 @@ export default function Home() {
             </button>
           </div>
 
-          <button className="md:hidden text-white">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+          <button 
+            className="md:hidden text-white z-50"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Меню"
+          >
+            {isMobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
           </button>
+          
+          {/* Мобильное меню */}
+          <div className={`fixed inset-0 bg-black/90 z-40 flex flex-col items-center justify-center space-y-8 transition-all duration-300 transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+            <a 
+              href="#why-us" 
+              className="text-2xl text-white hover:text-primary transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Как мы работаем
+            </a>
+            <a 
+              href="#services" 
+              className="text-2xl text-white hover:text-primary transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Услуги
+            </a>
+            <div className="pt-4">
+              <CurrencySelector
+                currency={currency}
+                onCurrencyChange={setCurrency}
+                showLanguage={false}
+              />
+            </div>
+          </div>
         </nav>
       </header>
 
@@ -270,20 +335,17 @@ export default function Home() {
         </section>
 
         {/* Services Section */}
-        <section id="services" className="py-20">
+        <section id="services" className="py-10">
           <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-            <h2 className="text-4xl font-bold text-center mb-12">
+            <h2 className="text-4xl font-bold text-center mb-8">
               Наши услуги
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services.map((service, index) => (
-                <ServiceCard
-                  key={index}
-                  service={service}
-                  onClick={() => handleServiceClick(service)}
-                />
-              ))}
-            </div>
+            <ServiceSection
+              services={services}
+              onServiceClick={handleServiceClick}
+              currency={currency}
+              usdRate={usdRate}
+            />
           </div>
         </section>
         
@@ -336,7 +398,7 @@ export default function Home() {
                   </ul>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-4">49 900 ₽</div>
+                  <div className="text-3xl font-bold mb-4">{formatPrice('49 900 ₽')}</div>
                   <button 
                     onClick={() => handlePackageSelect({
                       name: 'Старт',
@@ -392,7 +454,7 @@ export default function Home() {
                   </ul>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-4">99 900 ₽</div>
+                  <div className="text-3xl font-bold mb-4">{formatPrice('99 900 ₽')}</div>
                   <button 
                     onClick={() => handlePackageSelect({
                       name: 'Бизнес',
@@ -447,12 +509,12 @@ export default function Home() {
                   </ul>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-4">249 900 ₽</div>
+                  <div className="text-3xl font-bold mb-4">{formatPrice('199 900 ₽')}</div>
                   <button 
                     onClick={() => handlePackageSelect({
                       name: 'Премиум',
                       description: 'Комплексное решение для крупного бизнеса',
-                      price: '249 900 ₽'
+                      price: '199 900 ₽'
                     })} 
                     className="btn btn-primary w-full"
                   >
@@ -465,7 +527,7 @@ export default function Home() {
         </section>
 
         {/* Почему с нами просто, быстро и эффективно */}
-        <section className="py-20 bg-gray-900">
+        <section id="why-us" className="py-20 bg-gray-900">
           <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
             <h2 className="text-4xl font-bold text-center mb-6">
               Почему с нами просто, быстро и эффективно
@@ -741,6 +803,8 @@ export default function Home() {
         <ServiceModal
           service={selectedService}
           onClose={handleCloseModal}
+          currency={currency}
+          usdRate={usdRate}
         />
       )}
       
@@ -758,6 +822,8 @@ export default function Home() {
           price={selectedPackage.price}
           onClose={closeModal}
           onSubmit={handlePackageSubmit}
+          currency={currency}
+          usdRate={usdRate}
         />
       )}
       

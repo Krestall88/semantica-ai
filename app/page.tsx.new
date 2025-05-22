@@ -1,0 +1,45 @@
+// ... (previous imports remain the same)
+
+export default function Home() {
+  // ... (previous state and functions remain the same)
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
+      {/* ... (previous JSX remains the same) */}
+      
+      {selectedService && (
+        <ServiceModal
+          service={selectedService}
+          onClose={handleCloseModal}
+          currency={currency}
+          usdRate={usdRate}
+        />
+      )}
+      
+      {showContactForm && (
+        <ContactForm 
+          onClose={() => setShowContactForm(false)} 
+          onPrivacyClick={handlePrivacyPolicyClick}
+        />
+      )}
+      
+      {selectedPackage && (
+        <PackageOrderForm
+          packageName={selectedPackage.name}
+          packageDescription={selectedPackage.description}
+          price={selectedPackage.price}
+          onClose={closeModal}
+          onSubmit={handlePackageSubmit}
+          currency={currency}
+          usdRate={usdRate}
+        />
+      )}
+      
+      {showPrivacyPolicy && (
+        <PrivacyPolicy
+          onClose={handleClosePrivacyPolicy}
+        />
+      )}
+    </div>
+  );
+}

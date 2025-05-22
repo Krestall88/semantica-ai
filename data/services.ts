@@ -12,7 +12,7 @@ export const services: Service[] = [
       "Хостинг и базовая SEO",
       "Поддержка 7 дней"
     ],
-    priceRub: 60000,
+    priceRub: 45000,
     forWhom: [
       "Эксперты и консультанты",
       "Онлайн-школы и коучи",
@@ -31,7 +31,7 @@ export const services: Service[] = [
       "Визуалы (опционально)",
       "Автопостинг в Telegram, VK, Instagram"
     ],
-    priceRub: 35000,
+    priceRub: 25000,
     forWhom: [
       "Эксперты и блогеры",
       "Контент-маркетологи",
@@ -107,7 +107,7 @@ export const services: Service[] = [
       "Аватар-форматы + обрезки",
       "Поддержка по выбору образа"
     ],
-    priceRub: 15000,
+    priceRub: 10000,
     forWhom: [
       "Эксперты и блогеры",
       "Курсы и наставники",

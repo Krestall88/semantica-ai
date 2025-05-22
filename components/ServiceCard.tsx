@@ -3,16 +3,31 @@
 import React from 'react';
 import type { Service } from '@/types/services';
 
+import type { Currency } from './CurrencySelector';
+
 interface ServiceCardProps {
   service: Service;
   onClick: () => void;
+  currency: Currency;
+  usdRate?: number;
 }
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
   onClick,
+  currency,
+  usdRate = 0,
 }) => {
   const formatPrice = (priceRub: number): string => {
+    if (currency === 'USD' && usdRate > 0) {
+      // First convert to USD, then add 5% markup
+      let priceUsd = (priceRub / usdRate) * 1.05;
+      // Round up to the nearest 5
+      priceUsd = Math.ceil(priceUsd / 5) * 5;
+      // Format with 0 decimal places since we're rounding to tens
+      return `$${priceUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+    }
+    // For RUB, just return the original price with ₽ symbol
     return `${priceRub.toLocaleString()} ₽`;
   };
 
