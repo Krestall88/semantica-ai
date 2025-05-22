@@ -1,33 +1,17 @@
 'use client';
 
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { Currency } from '@/types/services';
 
 interface CurrencySelectorProps {
   currency: Currency;
   onCurrencyChange: (currency: Currency) => void;
-  onUsdRateChange: (rate: number) => void;
 }
 
 export const CurrencySelector: FC<CurrencySelectorProps> = ({
   currency,
   onCurrencyChange,
-  onUsdRateChange,
 }) => {
-  useEffect(() => {
-    const fetchUsdRate = async () => {
-      try {
-        const response = await fetch('https://www.cbr-xml-daily.ru/daily_json.js');
-        const data = await response.json();
-        onUsdRateChange(data.Valute.USD.Value);
-      } catch (error) {
-        console.error('Error fetching USD rate:', error);
-        onUsdRateChange(90); // Fallback rate
-      }
-    };
-
-    fetchUsdRate();
-  }, [onUsdRateChange]);
 
   return (
     <div className="relative">

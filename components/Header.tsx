@@ -20,12 +20,12 @@ export const Header: FC<HeaderProps> = ({
           Semantica AI
         </Link>
         <nav className="hidden md:flex space-x-8">
-          <a href="#services" className="text-gray-300 hover:text-blue-400 transition-colors">
+          <Link href="#services" className="text-gray-300 hover:text-blue-400 transition-colors">
             Услуги
-          </a>
-          <a href="#pricing" className="text-gray-300 hover:text-blue-400 transition-colors">
+          </Link>
+          <Link href="#pricing" className="text-gray-300 hover:text-blue-400 transition-colors">
             Цены
-          </a>
+          </Link>
           <button
             onClick={onContactClick}
             className="text-gray-300 hover:text-blue-400 transition-colors"

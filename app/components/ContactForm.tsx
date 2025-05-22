@@ -41,7 +41,7 @@ export const ContactForm: FC<ContactFormProps> = ({
       } else {
         // Можно добавить уведомление об ошибке
       }
-    } catch (error) {
+    } catch {
       // Можно добавить уведомление об ошибке
     } finally {
       setIsSubmitting(false);

@@ -11,6 +11,9 @@ export const FadeIn: FC<FadeInProps> = ({ children, delay = 0 }) => {
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const currentElement = elementRef.current;
+    if (!currentElement) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -26,14 +29,10 @@ export const FadeIn: FC<FadeInProps> = ({ children, delay = 0 }) => {
       }
     );
 
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
-    }
+    observer.observe(currentElement);
 
     return () => {
-      if (elementRef.current) {
-        observer.unobserve(elementRef.current);
-      }
+      observer.unobserve(currentElement);
     };
   }, [delay]);
 

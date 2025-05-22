@@ -9,9 +9,10 @@ import { PackageOrderForm } from '../components/PackageOrderForm';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
 import { CurrencySelector, type Currency } from '../components/CurrencySelector';
 import { services } from '@/data/services';
+import type { Service } from '@/types/service';
 
 export default function Home() {
-  const [selectedService, setSelectedService] = useState<any>(null);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<{
     name: string;
     description: string;
@@ -20,29 +21,20 @@ export default function Home() {
   const [currency, setCurrency] = useState<Currency>('RUB');
   const [showContactForm, setShowContactForm] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    const handleOpenContactForm = (event: CustomEvent) => {
-      const serviceTitle = event.detail?.service || '';
+    const handleOpenContactForm = () => {
       setShowContactForm(true);
     };
 
-    window.addEventListener('resize', handleResize);
     window.addEventListener('openContactForm', handleOpenContactForm as EventListener);
-    handleResize();
 
     return () => {
-      window.removeEventListener('resize', handleResize);
       window.removeEventListener('openContactForm', handleOpenContactForm as EventListener);
-    };
+    }
   }, []);
 
-  const handleServiceClick = (service: any) => {
+  const handleServiceClick = (service: Service) => {
     setSelectedService(service);
   };
 
@@ -749,7 +741,6 @@ export default function Home() {
         <ServiceModal
           service={selectedService}
           onClose={handleCloseModal}
-          currency={currency}
         />
       )}
       

@@ -8,14 +8,12 @@ import { CurrencySelector } from './CurrencySelector';
 interface HeaderProps {
   currency: Currency;
   onCurrencyChange: (currency: Currency) => void;
-  onUsdRateChange: (rate: number) => void;
   onContactClick: () => void;
 }
 
 export const Header: FC<HeaderProps> = ({
   currency,
   onCurrencyChange,
-  onUsdRateChange,
   onContactClick,
 }) => {
   return (
@@ -29,7 +27,6 @@ export const Header: FC<HeaderProps> = ({
             <CurrencySelector
               currency={currency}
               onCurrencyChange={onCurrencyChange}
-              onUsdRateChange={onUsdRateChange}
             />
             <button
               onClick={onContactClick}

@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import type { Service } from '@/types/services';
-import type { Currency } from './CurrencySelector';
 import { Modal } from './Modal';
 import { OrderForm } from './OrderForm';
 
@@ -17,13 +16,11 @@ type ViewMode = 'details' | 'order';
 interface ServiceModalProps {
   service: Service;
   onClose: () => void;
-  currency: Currency;
 }
 
 export const ServiceModal: React.FC<ServiceModalProps> = ({
   service,
   onClose,
-  currency,
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('details');
   const [isSubmitted, setIsSubmitted] = useState(false);
