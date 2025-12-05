@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 interface PricingFeature {
   name: string;
   included: boolean;
@@ -23,6 +24,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   isPopular = false,
   onSelect,
 }) => {
+  const { t } = useTranslation();
   const formatPrice = (priceRub: number): string => {
     return `${priceRub.toLocaleString()} ₽`;
   };
@@ -30,7 +32,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
     <div className={`price-card ${isPopular ? 'popular' : ''}`}>
       {isPopular && (
         <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white text-sm px-4 py-1 rounded-full">
-          Популярный выбор
+          {t('pricing_popular', 'Популярный выбор')}
         </span>
       )}
       
@@ -60,11 +62,11 @@ export const PricingCard: React.FC<PricingCardProps> = ({
         ))}
       </ul>
       
-      <button 
+      <button
         onClick={onSelect}
-        className={`w-full btn ${isPopular ? 'btn-animated' : 'btn-secondary'}`}
+        className="w-full px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary hover:text-white transition-all duration-300"
       >
-        Выбрать пакет
+        {t('button_details', 'Подробнее')}
       </button>
     </div>
   );

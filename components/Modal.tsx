@@ -5,7 +5,10 @@ interface ModalProps {
   children: ReactNode;
 }
 
+import { useTranslation } from 'react-i18next';
+
 export const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
+  const { t } = useTranslation();
   // Prevent background scrolling when modal is open
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -24,7 +27,7 @@ export const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
         <button
           onClick={onClose}
           className="fixed top-6 right-6 z-10 bg-[#1A1A1A] rounded-full w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
-          aria-label="Закрыть"
+          aria-label={t('button_close', 'Закрыть')}
         >
           ✕
         </button>

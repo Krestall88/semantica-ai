@@ -1,12 +1,16 @@
 'use client';
 
 import React from 'react';
-import type { Service } from '@/types/services';
-
+import { useTranslation } from 'react-i18next';
+import type { Service } from '@/types/service';
 import type { Currency } from './CurrencySelector';
 
 interface ServiceCardProps {
-  service: Service;
+  service: Service & {
+    title: string;
+    description: string;
+    includes: string[];
+  };
   onClick: () => void;
   currency: Currency;
   usdRate?: number;
@@ -18,6 +22,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   currency,
   usdRate = 0,
 }) => {
+  const { t } = useTranslation();
   const formatPrice = (priceRub: number): string => {
     if (currency === 'USD' && usdRate > 0) {
       // First convert to USD, then add 5% markup
@@ -80,7 +85,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             onClick();
           }}
         >
-          Подробнее
+          {t('button_details', 'Подробнее')}
         </button>
       </div>
     </div>

@@ -1,162 +1,191 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
-import { ServiceModal } from '../components/ServiceModal';
 import { ContactForm } from '../components/ContactForm';
-import { PackageOrderForm } from '../components/PackageOrderForm';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
-import { CurrencySelector, type Currency } from '../components/CurrencySelector';
-import { services } from '@/data/services';
-import type { Service } from '@/types/service';
-import { ServiceSection } from '../components/ServiceSection';
 
 export default function Home() {
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [selectedPackage, setSelectedPackage] = useState<{
-    name: string;
-    description: string;
-    price: string;
-  } | null>(null);
-  const [currency, setCurrency] = useState<Currency>('RUB');
-  const [usdRate, setUsdRate] = useState<number>(0);
   const [showContactForm, setShowContactForm] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const [showAuditForm, setShowAuditForm] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const formatPrice = (price: string): string => {
-    if (currency === 'USD' && usdRate > 0) {
-      const priceNum = parseInt(price.replace(/\D/g, '')) / usdRate * 1.05; // 5% наценка
-      return `$${Math.ceil(priceNum / 5) * 5}`; // Округление до 5
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
-    return price;
-  };
-
-  useEffect(() => {
-    // Fetch USD to RUB exchange rate from our API
-    const fetchUsdRate = async () => {
-      try {
-        const response = await fetch('/api/usd-rate');
-        const data = await response.json();
-        setUsdRate(data.rate || 0);
-      } catch (error) {
-        console.error('Failed to fetch USD rate:', error);
-        setUsdRate(0);
-      }
-    };
-
-    fetchUsdRate();
-    // Refresh rate every 5 minutes
-    const interval = setInterval(fetchUsdRate, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const handleOpenContactForm = () => {
-      setShowContactForm(true);
-    };
-
-    window.addEventListener('openContactForm', handleOpenContactForm as EventListener);
-
-    return () => {
-      window.removeEventListener('openContactForm', handleOpenContactForm as EventListener);
-    };
-  }, []);
-
-  const handleServiceClick = (service: Service) => {
-    setSelectedService(service);
-  };
-
-  const handlePackageSelect = (pkg: { name: string; description: string; price: string }) => {
-    setSelectedPackage(pkg);
-  };
-
-  const closeModal = () => {
-    setSelectedService(null);
-    setSelectedPackage(null);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedService(null);
-    setSelectedPackage(null);
-  };
-
-  const handlePackageSubmit = async (formData: { name: string; contact: string; description: string }): Promise<void> => {
-    try {
-      const response = await fetch('/api/submit-form', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: 'package',
-          service: selectedPackage?.name || 'Неизвестный пакет',
-          ...formData
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-      
-      // Возвращаем undefined, так как функция должна возвращать Promise<void>
-      return;
-    } catch (error) {
-      console.error('Error submitting package form:', error);
-      throw error; // Ошибка будет обработана в компоненте формы
-    }
+    setIsMobileMenuOpen(false);
   };
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handlePrivacyPolicyClick = () => {
-    setShowPrivacyPolicy(true);
-  };
+  // Кейсы - обновленные по вашему описанию
+  const cases = [
+    {
+      id: 'cleaning',
+      title: 'Система управления для клининговой компании',
+      tag: 'B2B Сервис',
+      description: 'Внутренняя система контроля и учёта для клининговой компании, работающей с промышленными и коммерческими объектами.',
+      features: [
+        'Учет объектов и чек-листы на основе техкарт',
+        'Заявки от заказчика через простую форму',
+        'Ежедневные чек-листы менеджера с фотоотчётами',
+        'Учёт инвентаря и химии',
+        'Telegram-уведомления о просрочках',
+        'Отчёты и история всех действий'
+      ],
+      result: 'Руководство видит всё: от заявок до химии. Менеджеры не теряются и не забывают. Качество уборки подтверждено фактами.',
+      images: ['cleaning-1.jpg', 'cleaning-2.jpg', 'cleaning-3.jpg']
+    },
+    {
+      id: 'production',
+      title: 'Производственные журналы (хлебозавод)',
+      tag: 'Производство',
+      description: 'Цифровизация производственных журналов для контроля ежедневных процессов на производстве.',
+      features: [
+        'Удобный календарь и навигация по датам',
+        'Журналы температуры и состояния оборудования',
+        'Журнал здоровья сотрудников',
+        'Электронная подпись записей',
+        'Экспорт в PDF и архив за любой день',
+        'Интеграции с 1С, весами, датчиками'
+      ],
+      result: 'Цифровизация 21 журнала, устранение ошибок ручного заполнения, прозрачность смены для руководителя.',
+      images: ['production-1.jpg', 'production-2.jpg', 'production-3.jpg']
+    },
+    {
+      id: 'distribution',
+      title: 'Система снабжения и дистрибуции продуктов',
+      tag: 'Логистика',
+      description: 'Цифровая система для компаний по снабжению и дистрибуции продуктов питания.',
+      features: [
+        'Заказ продукции с завода',
+        'Приём товара на складе с контролем',
+        'Работа агентов с остатками и сроками',
+        'Подготовка заказов и отгрузка',
+        'Мобильное приложение для водителей',
+        'Аналитика и финансы в одном отчёте'
+      ],
+      result: 'Единая система вместо Bitrix, WhatsApp и Excel. Полный контроль от заказа до доставки.',
+      images: ['distribution-1.jpg', 'distribution-2.jpg', 'distribution-3.jpg']
+    },
+    {
+      id: 'documents',
+      title: 'Модуль документооборота',
+      tag: 'Документооборот',
+      description: 'MVP модуля для управления документами с ролями, статусами и маршрутами согласования.',
+      features: [
+        'Загрузка и хранение документов',
+        'Аккуратная структура разделов',
+        'Роли и уровни доступа',
+        'Статусы и движение документов',
+        'Маршруты согласования',
+        'Журнал действий и событий'
+      ],
+      result: 'Все документы в одном месте с контролем версий, доступов и сроков согласования.',
+      images: ['documents-1.jpg', 'documents-2.jpg', 'documents-3.jpg']
+    }
+  ];
 
-  const handleClosePrivacyPolicy = () => {
-    setShowPrivacyPolicy(false);
-  };
+  // Услуги
+  const services = [
+    'ERP/CRM-системы под ключ',
+    'Управление производством',
+    'Логистические системы',
+    'Заявки и маршрутизация',
+    'Управление персоналом и процессами',
+    'Склад, учёт, отчёты',
+    'Telegram-боты и мини-апп',
+    'AI-модули (ассистенты, классификация)',
+    'Автоматизация на уровне компании',
+    'Интеграции: API, телефония, 1С'
+  ];
+
+  // Преимущества
+  const advantages = [
+    { icon: '🎯', title: 'Индивидуальная разработка', desc: 'Под ваши процессы, не под шаблон' },
+    { icon: '⚡', title: 'Быстрое внедрение MVP', desc: '10-20 дней до первой версии' },
+    { icon: '🤖', title: 'Больше автоматизаций', desc: 'Меньше ручной работы' },
+    { icon: '💰', title: 'Доступная стоимость', desc: 'Без подписки и скрытых платежей' },
+    { icon: '🎨', title: 'Простой интерфейс', desc: 'Понятен без обучения' },
+    { icon: '🔗', title: 'Любые интеграции', desc: 'API, 1С, телефония, боты' },
+    { icon: '🛠', title: 'Бесплатное сопровождение', desc: '1-3 месяца после внедрения' },
+    { icon: '✅', title: 'Честные сроки', desc: 'Без "доделок вечность"' }
+  ];
+
+  // Этапы работы
+  const workStages = [
+    {
+      num: '01',
+      title: 'Описание процессов',
+      desc: 'Вы описываете свои процессы голосом или текстом. Мы задаём уточняющие вопросы.',
+      duration: '1-2 дня'
+    },
+    {
+      num: '02',
+      title: 'План проекта и КП',
+      desc: 'Разрабатываем план проекта, определяем модули и готовим коммерческое предложение.',
+      duration: '2-3 дня'
+    },
+    {
+      num: '03',
+      title: 'Согласование ТЗ',
+      desc: 'После согласования КП готовим детальное техническое задание с описанием всех функций.',
+      duration: '3-5 дней'
+    },
+    {
+      num: '04',
+      title: 'Договор и старт',
+      desc: 'Подписываем договор, получаем предоплату и начинаем разработку системы.',
+      duration: '1 день'
+    },
+    {
+      num: '05',
+      title: 'Разработка MVP',
+      desc: 'Создаём первую рабочую версию. Вы тестируете, мы дорабатываем по обратной связи.',
+      duration: '10-20 дней'
+    },
+    {
+      num: '06',
+      title: 'Внедрение и поддержка',
+      desc: 'Запускаем систему, обучаем команду. Бесплатное сопровождение после внедрения.',
+      duration: '1-3 мес'
+    }
+  ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-md border-b border-white/10">
-        <nav className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-4 flex justify-between items-center">
+    <div className="min-h-screen flex flex-col bg-[#0A0A0F]">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 glass-strong">
+        <nav className="container-custom py-4 flex justify-between items-center">
           <div 
-            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={scrollToTop}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && scrollToTop()}
           >
-            <Image src="/logo-white.svg" alt="Logo" width={32} height={32} />
-            <span className="text-xl font-bold text-white">Semantica AI</span>
+            <Image src="/logo-white.svg" alt="SemanticaAI" width={36} height={36} />
+            <span className="text-xl font-bold">SemanticaAI</span>
           </div>
 
-          <div className="hidden md:flex space-x-8 items-center">
-            <a href="#why-us" className="text-gray-300 hover:text-primary transition-colors">Как мы работаем</a>
-            <a href="#services" className="text-gray-300 hover:text-primary transition-colors">Услуги</a>
-            <CurrencySelector
-              currency={currency}
-              onCurrencyChange={setCurrency}
-              showLanguage={true}
-            />
-            <button
-              onClick={() => setShowContactForm(true)}
-              className="btn btn-primary animate-pulse-glow"
-            >
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center gap-8">
+            <button onClick={() => scrollToSection('about')} className="text-gray-300 hover:text-white transition-colors">О нас</button>
+            <button onClick={() => scrollToSection('cases')} className="text-gray-300 hover:text-white transition-colors">Кейсы</button>
+            <button onClick={() => scrollToSection('process')} className="text-gray-300 hover:text-white transition-colors">Процесс</button>
+            <button onClick={() => scrollToSection('services')} className="text-gray-300 hover:text-white transition-colors">Услуги</button>
+            <button onClick={() => scrollToSection('contacts')} className="text-gray-300 hover:text-white transition-colors">Контакты</button>
+            <button onClick={() => setShowContactForm(true)} className="btn btn-primary animate-pulse-glow">
               Оставить заявку
             </button>
           </div>
 
+          {/* Mobile Menu Button */}
           <button 
-            className="md:hidden text-white z-50"
+            className="md:hidden text-white p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Меню"
           >
             {isMobileMenuOpen ? (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,669 +197,700 @@ export default function Home() {
               </svg>
             )}
           </button>
-          
-          {/* Мобильное меню */}
-          <div className={`fixed inset-0 bg-black/90 z-40 flex flex-col items-center justify-center space-y-8 transition-all duration-300 transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-            <a 
-              href="#why-us" 
-              className="text-2xl text-white hover:text-primary transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Как мы работаем
-            </a>
-            <a 
-              href="#services" 
-              className="text-2xl text-white hover:text-primary transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Услуги
-            </a>
-            <div className="pt-4">
-              <CurrencySelector
-                currency={currency}
-                onCurrencyChange={setCurrency}
-                showLanguage={false}
-              />
+        </nav>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden glass-strong border-t border-white/10">
+            <div className="container-custom py-4 flex flex-col gap-4">
+              <button onClick={() => scrollToSection('about')} className="text-left text-gray-300 hover:text-white py-2">О нас</button>
+              <button onClick={() => scrollToSection('cases')} className="text-left text-gray-300 hover:text-white py-2">Кейсы</button>
+              <button onClick={() => scrollToSection('process')} className="text-left text-gray-300 hover:text-white py-2">Процесс</button>
+              <button onClick={() => scrollToSection('services')} className="text-left text-gray-300 hover:text-white py-2">Услуги</button>
+              <button onClick={() => scrollToSection('contacts')} className="text-left text-gray-300 hover:text-white py-2">Контакты</button>
+              <button onClick={() => { setShowContactForm(true); setIsMobileMenuOpen(false); }} className="btn btn-primary w-full">
+                Оставить заявку
+              </button>
             </div>
           </div>
-        </nav>
+        )}
       </header>
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="min-h-[85vh] pt-32 px-6 md:px-12 lg:px-24 gradient-bg">
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div className="max-w-2xl space-y-6">
-              <h1 className="text-4xl md:text-5xl font-bold">
-                Автоматизируем ваш бизнес за 7 дней — без кода и лишней бюрократии
-              </h1>
-              <p className="text-xl text-gray-400">
-              Создаём сайты, чат-ботов, автоматизации и визуальные решения под ключ с помощью ИИ и no-code.
-                Увеличьте продажи и освободите время уже на этой неделе.
-              </p>
-              <div className="pt-4">
-                <button
-                  onClick={() => setShowContactForm(true)}
-                  className="btn btn-primary"
-                >
-                  Запустить проект за 7 дней
-                </button>
+        <section className="pt-24 md:pt-28 pb-12 md:pb-16 hero-gradient grid-bg relative overflow-hidden">
+          <div className="container-custom">
+            <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
+              {/* Left - Text */}
+              <div>
+                <div className="badge mb-6">
+                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                  Принимаем новые проекты
+                </div>
+                
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                  Индивидуальные операционные системы для бизнеса
+                  <span className="block text-gray-400 text-xl md:text-2xl lg:text-3xl mt-4 font-normal">
+                    — под ваши процессы, без лишнего
+                  </span>
+                </h1>
+                
+                <p className="text-lg text-gray-400 mb-8 leading-relaxed">
+                  Создаю управленческие системы, которые закрывают реальные процессы компании: заявки, производство, логистика, задачи, аналитика, контроль сотрудников, автоматизации и AI-модули.
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button 
+                    onClick={() => setShowAuditForm(true)}
+                    className="btn btn-primary btn-hero"
+                  >
+                    Заказать экспресс-аудит
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </button>
+                  <button 
+                    onClick={() => scrollToSection('cases')}
+                    className="btn btn-secondary btn-hero"
+                  >
+                    Посмотреть кейсы
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="relative w-full aspect-square max-w-lg mx-auto">
-              <Image
-                src="/hero-image.svg"
-                alt="Hero illustration"
-                fill
-                className="object-contain animate-float"
-                priority
-              />
-              <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-4 p-4">
-                <div className="w-20 h-10 relative">
-                  <Image 
-                    src="/brands/autodesk.svg" 
-                    alt="Autodesk" 
-                    fill 
-                    className="object-contain opacity-50 hover:opacity-100 transition-opacity" 
-                  />
-                </div>
-                <div className="w-20 h-10 relative">
-                  <Image 
-                    src="/brands/intuit.svg" 
-                    alt="Intuit" 
-                    fill 
-                    className="object-contain opacity-50 hover:opacity-100 transition-opacity" 
-                  />
-                </div>
-                <div className="w-20 h-10 relative">
-                  <Image 
-                    src="/brands/walmart.svg" 
-                    alt="Walmart" 
-                    fill 
-                    className="object-contain opacity-50 hover:opacity-100 transition-opacity" 
-                  />
-                </div>
-                <div className="w-20 h-10 relative">
-                  <Image 
-                    src="/brands/zoom.svg" 
-                    alt="Zoom" 
-                    fill 
-                    className="object-contain opacity-50 hover:opacity-100 transition-opacity" 
-                  />
+              {/* Right - Hero Image */}
+              <div className="relative hidden lg:block">
+                <div className="relative w-full aspect-square max-w-lg mx-auto">
+                  {/* Decorative background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-3xl blur-2xl"></div>
+                  
+                  {/* Main visual */}
+                  <div className="relative bg-[#12121A] rounded-3xl border border-white/10 p-8 h-full flex flex-col justify-center">
+                    <div className="text-center mb-6">
+                      <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 mb-4">
+                        <span className="text-4xl">⚡</span>
+                      </div>
+                      <h3 className="text-2xl font-bold gradient-text">SemanticaAI</h3>
+                      <p className="text-gray-400 mt-2">Операционные системы</p>
+                    </div>
+                    
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 gap-4 mt-6">
+                      <div className="bg-white/5 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-bold text-blue-400">15+</div>
+                        <div className="text-sm text-gray-400">лет опыта</div>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-bold text-purple-400">10-20</div>
+                        <div className="text-sm text-gray-400">дней до MVP</div>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-bold text-green-400">50+</div>
+                        <div className="text-sm text-gray-400">проектов</div>
+                      </div>
+                      <div className="bg-white/5 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-bold text-cyan-400">24/7</div>
+                        <div className="text-sm text-gray-400">поддержка</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Ключевые решения */}
-        <section className="py-20 bg-[#1A1A1A]">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-4">Наши ключевые решения</h2>
-              <p className="text-xl text-gray-400">Все услуги — без кода, быстро и с упором на результат.</p>
+        {/* About Section */}
+        <section id="about" className="py-16 bg-black/30">
+          <div className="container-custom">
+            <div className="max-w-4xl mx-auto text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Студия прикладной автоматизации
+              </h2>
+              <p className="text-lg text-gray-400">
+                Создаём индивидуальные ERP/CRM-системы, которые на 100% повторяют процессы компании.
+              </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Сайты под ключ */}
-              <div className="bg-[#2A2A2A] rounded-2xl p-8 hover:bg-[#333] transition-colors duration-300">
-                <h3 className="text-2xl font-semibold mb-6">🔹 Сайты под ключ</h3>
-                <ul className="space-y-4 text-gray-300">
-                  <li className="flex items-start">
-                    <span className="text-primary mr-2">•</span>
-                    Визитки, лендинги, многостраничники
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-primary mr-2">•</span>
-                    CRM, оплата, аналитика
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-primary mr-2">•</span>
-                    Готово за 7 дней
-                  </li>
-                </ul>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="card p-5">
+                <div className="text-2xl mb-3">🎯</div>
+                <h3 className="text-lg font-semibold mb-2">Проектируем с нуля</h3>
+                <p className="text-gray-400 text-sm">Система под ваши процессы, а не вы под систему.</p>
+              </div>
+              <div className="card p-5">
+                <div className="text-2xl mb-3">🎨</div>
+                <h3 className="text-lg font-semibold mb-2">Простые интерфейсы</h3>
+                <p className="text-gray-400 text-sm">Любой сотрудник разберётся без обучения.</p>
+              </div>
+              <div className="card p-5">
+                <div className="text-2xl mb-3">⚙️</div>
+                <h3 className="text-lg font-semibold mb-2">Автоматизации</h3>
+                <p className="text-gray-400 text-sm">Экономим часы рутинной работы.</p>
+              </div>
+              <div className="card p-5">
+                <div className="text-2xl mb-3">🤖</div>
+                <h3 className="text-lg font-semibold mb-2">AI-модули</h3>
+                <p className="text-gray-400 text-sm">ИИ только там, где это даёт результат.</p>
+              </div>
+              <div className="card p-5">
+                <div className="text-2xl mb-3">🚀</div>
+                <h3 className="text-lg font-semibold mb-2">MVP за 10–20 дней</h3>
+                <p className="text-gray-400 text-sm">Быстрый запуск рабочей версии.</p>
+              </div>
+              <div className="card card-highlight p-5">
+                <div className="text-2xl mb-3">💼</div>
+                <h3 className="text-lg font-semibold mb-2">Ваш инструмент</h3>
+                <p className="text-gray-400 text-sm">Не «CRM», а конкретный инструмент управления.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Problems Section */}
+        <section className="py-16">
+          <div className="container-custom">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Мы закрываем хаос в операционке</h2>
+              <p className="text-lg text-gray-400">Знакомые проблемы? Мы их решаем.</p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Problems */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold mb-4 text-red-400">❌ Проблемы</h3>
+                {[
+                  'Данные в Excel, WhatsApp, Google Таблицах',
+                  'Сотрудники забывают, теряют, не фиксируют',
+                  'Каждый отдел работает в своей системе',
+                  'Процессы не прозрачны — руководитель всё тянет вручную',
+                  'Автоматизации отсутствуют или работают криво',
+                  'Bitrix/1C/Мегаплан: слишком сложно, много лишнего'
+                ].map((problem, i) => (
+                  <div key={i} className="problem-item">
+                    <span className="text-red-400 text-lg">✕</span>
+                    <span className="text-gray-300 text-sm">{problem}</span>
+                  </div>
+                ))}
               </div>
 
-              {/* Автоматизация */}
-              <div className="bg-[#2A2A2A] rounded-2xl p-8 hover:bg-[#333] transition-colors duration-300">
-                <h3 className="text-2xl font-semibold mb-6">🔹 Автоматизация</h3>
-                <ul className="space-y-4 text-gray-300">
-                  <li className="flex items-start">
-                    <span className="text-primary mr-2">•</span>
-                    Создание контента, автопостинг
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-primary mr-2">•</span>
-                    Боты, рассылки, интеграции
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-primary mr-2">•</span>
-                    AI + no-code без лишней рутины
-                  </li>
-                </ul>
+              {/* Solutions */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold mb-4 text-green-400">✓ Решения</h3>
+                {[
+                  'Единый интерфейс для всех процессов',
+                  'Система сама напоминает, считает, контролирует',
+                  'Автоматический учёт, отчёты, зарплаты, статусы',
+                  'Маршрутизация задач между сотрудниками',
+                  'Интеграции (Telegram, телефония, склад, API)',
+                  'Система, понятная каждому без обучения'
+                ].map((solution, i) => (
+                  <div key={i} className="solution-item">
+                    <span className="text-green-400 text-lg">✓</span>
+                    <span className="text-gray-300 text-sm">{solution}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Cases Section */}
+        <section id="cases" className="py-16 bg-black/30">
+          <div className="container-custom">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Кейсы</h2>
+              <p className="text-lg text-gray-400">Реальные проекты, реальные результаты</p>
+            </div>
+
+            <div className="space-y-8">
+              {cases.map((caseItem, index) => (
+                <div key={index} className="case-card">
+                  <div className="grid lg:grid-cols-2 gap-0">
+                    {/* Images */}
+                    <div className="bg-[#0D0D12] p-6 lg:p-8">
+                      <div className="grid grid-cols-3 gap-3 h-full">
+                        {caseItem.images.map((img, i) => (
+                          <div 
+                            key={i} 
+                            className="relative bg-white/5 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center border border-white/10"
+                          >
+                            {/* Placeholder for images */}
+                            <div className="text-center p-4">
+                              <div className="text-3xl mb-2 opacity-30">🖼️</div>
+                              <p className="text-xs text-gray-500">{img}</p>
+                            </div>
+                            {/* When you add real images, use this:
+                            <Image 
+                              src={`/cases/${caseItem.id}/${img}`}
+                              alt={`${caseItem.title} - скриншот ${i + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                            */}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-6 lg:p-8">
+                      <div className="badge mb-3">{caseItem.tag}</div>
+                      <h3 className="text-xl font-bold mb-3">{caseItem.title}</h3>
+                      <p className="text-gray-400 text-sm mb-4">{caseItem.description}</p>
+                      
+                      <div className="space-y-2 mb-4">
+                        {caseItem.features.slice(0, 4).map((feature, i) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <span className="text-blue-400 text-sm">•</span>
+                            <span className="text-gray-300 text-sm">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                        <p className="text-green-400 text-sm">
+                          <span className="font-medium">Результат:</span> {caseItem.result}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Work Process Section */}
+        <section id="process" className="py-16">
+          <div className="container-custom">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Как мы работаем</h2>
+              <p className="text-lg text-gray-400">От идеи до работающей системы</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {workStages.map((stage, index) => (
+                <div key={index} className="relative bg-white/[0.02] rounded-xl border border-white/5 p-5 hover:border-blue-500/30 transition-colors">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center text-blue-400 font-bold text-sm">
+                      {stage.num}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold mb-1">{stage.title}</h3>
+                      <p className="text-gray-400 text-sm mb-2">{stage.desc}</p>
+                      <span className="text-xs text-blue-400">{stage.duration}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Support Section */}
+        <section className="py-12 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-y border-white/5">
+          <div className="container-custom">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-xl bg-green-500/20 flex items-center justify-center">
+                  <span className="text-2xl">🛡️</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">Бесплатное сопровождение после внедрения</h3>
+                  <p className="text-gray-400">Поддержка, доработки и консультации</p>
+                </div>
+              </div>
+              <div className="flex gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400">1 месяц</div>
+                  <div className="text-sm text-gray-400">на все проекты</div>
+                </div>
+                <div className="w-px bg-white/10"></div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-400">3 месяца</div>
+                  <div className="text-sm text-gray-400">от 250 000 ₽</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* About Me Section */}
+        <section className="py-16 bg-black/30">
+          <div className="container-custom">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold mb-3">Кто создаёт ваши системы</h2>
               </div>
 
-              {/* Визуальное оформление */}
-              <div className="bg-[#2A2A2A] rounded-2xl p-8 hover:bg-[#333] transition-colors duration-300">
-                <h3 className="text-2xl font-semibold mb-6">🔹 Визуальное оформление</h3>
-                <ul className="space-y-4 text-gray-300">
-                  <li className="flex items-start">
-                    <span className="text-primary mr-2">•</span>
-                    AI-фотосессии, аватары
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-primary mr-2">•</span>
-                    Соцсети и баннеры
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-primary mr-2">•</span>
-                    Уникальный стиль под ваш бренд
-                  </li>
-                </ul>
+              <div className="card card-highlight p-6 md:p-8">
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                  <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl flex-shrink-0">
+                    👨‍💻
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-1">Николай Перепичко</h3>
+                    <p className="text-blue-400 text-sm mb-4">Основатель SemanticaAI</p>
+                    
+                    <div className="space-y-3 text-gray-300 text-sm">
+                      <p><strong className="text-white">15 лет опыта</strong> в управлении, логистике и оптимизации процессов.</p>
+                      <p>Создал десятки операционных систем для производства, логистики, образования, клининга и сервиса.</p>
+                    </div>
+
+                    <div className="mt-5 p-4 bg-white/5 rounded-lg border border-white/10">
+                      <p className="text-gray-400 text-sm">
+                        Никакой бюрократии. Все решения принимаются быстро, изменения внедряются в тот же день.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Services Section */}
-        <section id="services" className="py-10">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-            <h2 className="text-4xl font-bold text-center mb-8">
-              Наши услуги
-            </h2>
-            <ServiceSection
-              services={services}
-              onServiceClick={handleServiceClick}
-              currency={currency}
-              usdRate={usdRate}
-            />
+        <section id="services" className="py-16">
+          <div className="container-custom">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Что мы делаем</h2>
+              <p className="text-lg text-gray-400">Полный спектр решений для автоматизации</p>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+              {services.map((service, index) => (
+                <span key={index} className="service-tag">
+                  {service}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
-        
-        {/* Комбинированные пакеты */}
-        <section className="py-20 bg-[#1A1A1A]">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-            <h2 className="text-4xl font-bold text-center mb-4">
-              Комбинированные <span className="text-primary">пакеты</span>
-            </h2>
-            <p className="text-xl text-gray-400 text-center mb-12">Выберите оптимальное решение для вашего бизнеса</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-gray-800 p-8 rounded-lg border border-gray-700 hover:border-primary transition-colors">
-                <h3 className="text-2xl font-bold mb-4">🔵 Старт</h3>
-                <p className="text-gray-400 mb-6">Идеально для малого бизнеса и индивидуальных предпринимателей</p>
-                <div className="mb-8">
-                  <h4 className="text-lg font-semibold mb-4">✅ Включено:</h4>
-                  <ul className="space-y-3">
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Сайт-визитка или лендинг
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Базовый дизайн
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      До 5 страниц
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Базовая SEO-оптимизация
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Хостинг на 1 год
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-gray-500 mr-2">✗</span>
-                      ИИ-ассистент
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-gray-500 mr-2">✗</span>
-                      Интеграция с CRM
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-gray-500 mr-2">✗</span>
-                      Расширенная аналитика
-                    </li>
+
+        {/* Advantages Section */}
+        <section className="py-16 bg-black/30">
+          <div className="container-custom">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Преимущества</h2>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {advantages.map((adv, index) => (
+                <div key={index} className="advantage-card">
+                  <span className="text-2xl">{adv.icon}</span>
+                  <div>
+                    <h3 className="font-semibold text-sm mb-1">{adv.title}</h3>
+                    <p className="text-xs text-gray-400">{adv.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Special Offer Section */}
+        <section className="py-16">
+          <div className="container-custom">
+            <div className="offer-card p-6 md:p-10">
+              <div className="grid lg:grid-cols-2 gap-8 items-center">
+                <div>
+                  <div className="badge mb-4">Специальное предложение</div>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                    Экспресс-аудит одного процесса
+                  </h2>
+                  <p className="text-gray-300 mb-6">
+                    Готово в этот же день. За 1 день вы получите:
+                  </p>
+                  
+                  <ul className="space-y-2 mb-6">
+                    {[
+                      'Карту процесса',
+                      'Выявленные узкие места',
+                      'Точки автоматизации',
+                      'Видео-разбор (6–8 мин)',
+                      'Оценку сроков и бюджета'
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
+                          <span className="text-green-400 text-xs">✓</span>
+                        </span>
+                        <span className="text-gray-300 text-sm">{item}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
+
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-4">{formatPrice('49 900 ₽')}</div>
-                  <button 
-                    onClick={() => handlePackageSelect({
-                      name: 'Старт',
-                      description: 'Идеально для малого бизнеса и индивидуальных предпринимателей',
-                      price: '49 900 ₽'
-                    })} 
-                    className="btn btn-primary w-full"
-                  >
-                    Выбрать пакет
-                  </button>
-                </div>
-              </div>
-              
-              <div className="relative bg-gradient-to-b from-[#221012] to-[#150E1F] p-8 rounded-lg border-2 border-[#4D1C23] transform scale-105 shadow-xl">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm">Популярный выбор</div>
-                <h3 className="text-2xl font-bold mb-4">🔎 Бизнес</h3>
-                <p className="text-gray-300 mb-6">Оптимальное решение для развивающегося бизнеса</p>
-                <div className="mb-8">
-                  <h4 className="text-lg font-semibold mb-4">✅ Включено:</h4>
-                  <ul className="space-y-3">
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Многостраничный сайт
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Премиум-дизайн
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      До 20 страниц
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Расширенная SEO-оптимизация
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Хостинг на 1 год
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      ИИ-ассистент
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Интеграция с CRM
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Базовая аналитика
-                    </li>
-                  </ul>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold mb-4">{formatPrice('99 900 ₽')}</div>
-                  <button 
-                    onClick={() => handlePackageSelect({
-                      name: 'Бизнес',
-                      description: 'Оптимальное решение для развивающегося бизнеса',
-                      price: '99 900 ₽'
-                    })} 
-                    className="btn btn-primary w-full"
-                  >
-                    Выбрать пакет
-                  </button>
-                </div>
-              </div>
-              
-              <div className="bg-gray-800 p-8 rounded-lg border border-gray-700 hover:border-primary transition-colors">
-                <h3 className="text-2xl font-bold mb-4">⬛ Премиум</h3>
-                <p className="text-gray-400 mb-6">Комплексное решение для крупного бизнеса</p>
-                <div className="mb-8">
-                  <h4 className="text-lg font-semibold mb-4">✅ Включено:</h4>
-                  <ul className="space-y-3">
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Корпоративный портал
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Уникальный дизайн
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Неограниченное количество страниц
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Полная SEO-оптимизация
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Хостинг на 2 года
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Продвинутый ИИ-ассистент
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Интеграция со всеми системами
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-primary mr-2">✓</span>
-                      Расширенная аналитика
-                    </li>
-                  </ul>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold mb-4">{formatPrice('199 900 ₽')}</div>
-                  <button 
-                    onClick={() => handlePackageSelect({
-                      name: 'Премиум',
-                      description: 'Комплексное решение для крупного бизнеса',
-                      price: '199 900 ₽'
-                    })} 
-                    className="btn btn-primary w-full"
-                  >
-                    Выбрать пакет
-                  </button>
+                  <div className="inline-block bg-white/5 rounded-xl p-6 border border-white/10">
+                    <p className="text-gray-400 text-sm mb-1">Стоимость</p>
+                    <div className="text-4xl font-bold mb-1">
+                      <span className="gradient-text">5 000 ₽</span>
+                    </div>
+                    <p className="text-gray-500 text-sm mb-6">или $80</p>
+                    
+                    <button 
+                      onClick={() => setShowAuditForm(true)}
+                      className="btn btn-accent w-full"
+                    >
+                      Получить аудит
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Почему с нами просто, быстро и эффективно */}
-        <section id="why-us" className="py-20 bg-gray-900">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-            <h2 className="text-4xl font-bold text-center mb-6">
-              Почему с нами просто, быстро и эффективно
-            </h2>
-            <p className="text-xl text-gray-400 text-center max-w-3xl mx-auto mb-12">
-              Мы не тратим ваше время на брифы и маркетинговые сессии. Мы берём задачу и решаем её — с помощью ИИ и no-code. Чётко. Без лишнего.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <div className="text-primary text-2xl mb-4">⚡</div>
-                <h3 className="text-xl font-semibold mb-2">Быстрый запуск за 7–14 дней</h3>
-                <p className="text-gray-400">Без недель обсуждений, правок и ожиданий. Мы автоматизировали сбор, разработку и запуск. Большинство проектов стартуют в течение недели.</p>
+        {/* Contacts Section */}
+        <section id="contacts" className="py-16 bg-black/30">
+          <div className="container-custom">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Контакты</h2>
+              <p className="text-lg text-gray-400">Свяжитесь удобным способом</p>
+            </div>
+
+            <div className="max-w-2xl mx-auto">
+              <div className="grid sm:grid-cols-3 gap-4 mb-8">
+                <a 
+                  href="https://t.me/Nikolai_Perepichko" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="card p-5 text-center hover:border-blue-500/50"
+                >
+                  <div className="text-3xl mb-3">📱</div>
+                  <h3 className="font-semibold text-sm mb-1">Telegram</h3>
+                  <p className="text-blue-400 text-xs">@Nikolai_Perepichko</p>
+                </a>
+
+                <a 
+                  href="https://wa.me/79123456789" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="card p-5 text-center hover:border-green-500/50"
+                >
+                  <div className="text-3xl mb-3">💬</div>
+                  <h3 className="font-semibold text-sm mb-1">WhatsApp</h3>
+                  <p className="text-green-400 text-xs">Написать</p>
+                </a>
+
+                <a 
+                  href="mailto:perepichko.nik@gmail.com"
+                  className="card p-5 text-center hover:border-purple-500/50"
+                >
+                  <div className="text-3xl mb-3">✉️</div>
+                  <h3 className="font-semibold text-sm mb-1">Email</h3>
+                  <p className="text-purple-400 text-xs">perepichko.nik@gmail.com</p>
+                </a>
               </div>
-              
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <div className="text-primary text-2xl mb-4">✅</div>
-                <h3 className="text-xl font-semibold mb-2">Гарантия результата, а не процесса</h3>
-                <p className="text-gray-400">Никакой &quot;консультационной&quot; пыли в глаза. Мы не рассуждаем — мы делаем. Каждый проект проверяется вручную и дорабатывается до полного &quot;ОК&quot;.</p>
-              </div>
-              
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <div className="text-primary text-2xl mb-4">💰</div>
-                <h3 className="text-xl font-semibold mb-2">Честные и понятные цены</h3>
-                <p className="text-gray-400">Вы платите за результат, а не за часы и гипотезы. Стоимость фиксируется заранее, без &quot;доплат за срочность&quot; и &quot;ещё одну итерацию&quot;.</p>
-              </div>
-              
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <div className="text-primary text-2xl mb-4">🧠</div>
-                <h3 className="text-xl font-semibold mb-2">Умные ИИ-решения внутри</h3>
-                <p className="text-gray-400">Контент, визуал, автоматизация и чат-боты — всё создаём и внедряем с использованием нейросетей и no-code инструментов. Быстро и прозрачно.</p>
-              </div>
-              
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <div className="text-primary text-2xl mb-4">🔄</div>
-                <h3 className="text-xl font-semibold mb-2">Поддержка без пауз</h3>
-                <p className="text-gray-400">Связь в Telegram 24/7 — без тикетов и ожиданий. Мы не прячемся за CRM: вы всегда знаете, кто отвечает за ваш проект.</p>
-              </div>
-              
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <div className="text-primary text-2xl mb-4">🔒</div>
-                <h3 className="text-xl font-semibold mb-2">Безопасность и конфиденциальность</h3>
-                <p className="text-gray-400">Все ваши данные, доступы и процессы — под защитой. Мы работаем только в проверенных сервисах и соблюдаем цифровую гигиену.</p>
+
+              <div className="text-center">
+                <button 
+                  onClick={() => setShowContactForm(true)}
+                  className="btn btn-primary btn-lg"
+                >
+                  Оставить заявку
+                </button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Process Section */}
-        <section id="process" className="py-20">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-            <h2 className="text-4xl font-bold text-center mb-16">
-              Просто, быстро и по шагам
+        {/* Final CTA */}
+        <section className="py-16 cta-gradient">
+          <div className="container-custom text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              Готовы навести порядок в операционке?
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl font-bold">1</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Вы оставляете заявку</h3>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl font-bold">2</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Мы обсуждаем задачи и утверждаем ТЗ</h3>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl font-bold">3</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Через 7 дней вы получаете решение</h3>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl font-bold">4</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Внедрение, поддержка и рост</h3>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Testimonials Section */}
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-            <h2 className="text-4xl font-bold text-center mb-12">
-              О нас говорят
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <div className="text-2xl mb-4">👩‍💼</div>
-                <h3 className="text-xl font-semibold mb-2">Анна, владелица онлайн-школы</h3>
-                <p className="text-gray-400">«Ребята внедрили автопостинг и сделали лендинг. Всё за 6 дней! Экономлю 3 часа в день — фантастика.»</p>
-              </div>
-              
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <div className="text-2xl mb-4">🧑‍💻</div>
-                <h3 className="text-xl font-semibold mb-2">Дмитрий, сооснователь стартапа</h3>
-                <p className="text-gray-400">«Без единой строки кода мы получили полноценный сайт с CRM и ботами. Очень крутой подход к задаче.»</p>
-              </div>
-              
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <div className="text-2xl mb-4">👨‍🏫</div>
-                <h3 className="text-xl font-semibold mb-2">Егор, бизнес-тренер</h3>
-                <p className="text-gray-400">«AI-фото и оформление соцсетей — теперь мой Instagram выглядит как у топ-экспертов. Спасибо за скорость и качество!»</p>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* For Whom Section */}
-        <section className="py-20 bg-gray-900">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-            <h2 className="text-4xl font-bold text-center mb-12">
-              Кому мы особенно полезны
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex items-start gap-4">
-                <div className="text-primary text-2xl">🎯</div>
-                <p className="text-xl">Экспертам, которые хотят продавать через контент</p>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="text-primary text-2xl">🚀</div>
-                <p className="text-xl">Стартапам, которым нужен сайт за неделю</p>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="text-primary text-2xl">📱</div>
-                <p className="text-xl">Блогерам и наставникам — для оформления и автоматизации</p>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="text-primary text-2xl">💼</div>
-                <p className="text-xl">Владельцам малого бизнеса — для ускорения процессов</p>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Final CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-blue-900 to-purple-900">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 text-center">
-            <h2 className="text-4xl font-bold mb-6">
-              Готовы сэкономить время и запустить бизнес на максимум?
-            </h2>
-            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Оставьте заявку — покажем, как ваш бизнес может расти с ИИ и no-code
+            <p className="text-gray-300 mb-6 max-w-xl mx-auto">
+              Закажите консультацию и узнайте, как автоматизировать ваши процессы
             </p>
-            <button
+            <button 
               onClick={() => setShowContactForm(true)}
               className="btn btn-primary btn-lg"
             >
-              Оставить заявку
+              Получить консультацию
             </button>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 py-12 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-            {/* Left Column */}
-            <div>
-              <div 
-                className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={scrollToTop}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && scrollToTop()}
+      <footer className="py-8 border-t border-white/10">
+        <div className="container-custom">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-3">
+              <Image src="/logo-white.svg" alt="SemanticaAI" width={28} height={28} />
+              <span className="font-bold text-sm">SemanticaAI</span>
+            </div>
+            
+            <div className="flex items-center gap-4 text-xs text-gray-400">
+              <button 
+                onClick={() => setShowPrivacyPolicy(true)}
+                className="hover:text-white transition-colors"
               >
-                <Image src="/logo-white.svg" alt="Logo" width={32} height={32} />
-                <span className="text-xl font-bold text-white">Semantica AI</span>
-              </div>
-              <p className="text-gray-400">AI-решения для бизнеса без кода. За 7 дней.</p>
+                Политика конфиденциальности
+              </button>
+              <span>© 2025 SemanticaAI</span>
             </div>
-            
-            {/* Middle Column */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Навигация</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#process" className="text-gray-400 hover:text-primary transition-colors">Как мы работаем</a>
-                </li>
-                <li>
-                  <a href="#services" className="text-gray-400 hover:text-primary transition-colors">Услуги</a>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => setShowContactForm(true)}
-                    className="text-gray-400 hover:text-primary transition-colors bg-transparent border-0 p-0 cursor-pointer"
-                  >
-                    Оставить заявку
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={handlePrivacyPolicyClick}
-                    className="text-gray-400 hover:text-primary transition-colors bg-transparent border-0 p-0 cursor-pointer"
-                  >
-                    Политика конфиденциальности
-                  </button>
-                </li>
-              </ul>
-            </div>
-            
-            {/* Right Column */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Контакты</h3>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.52.36-.99.53-1.41.52-.46-.01-1.35-.26-2.01-.48-.81-.27-1.46-.42-1.4-.88.03-.24.37-.49 1.03-.74 4.04-1.76 6.73-2.92 8.07-3.48 3.84-1.61 4.64-1.89 5.17-1.9.11 0 .37.03.54.17.14.12.18.28.2.45-.02.14-.01.3-.02.43z"/>
-                  </svg>
-                  <a 
-                    href="https://t.me/Nikolai_Perepichko" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-primary transition-colors"
-                  >
-                    @Nikolai_Perepichko
-                  </a>
-                </li>
-                <li className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                  </svg>
-                  <a 
-                    href="mailto:perepichko.nik@gmail.com" 
-                    className="text-gray-400 hover:text-primary transition-colors"
-                  >
-                    perepichko.nik@gmail.com
-                  </a>
-                </li>
-                <li className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
-                    <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                  </svg>
-                  <span className="text-gray-400">Пн–Вс, 09:00–21:00</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          
-          {/* Copyright */}
-          <div className="text-center pt-8 border-t border-gray-800">
-            <p className="text-gray-500">© 2025 Semantica AI. Все права защищены</p>
           </div>
         </div>
       </footer>
 
-      {/* Telegram Button */}
-      <a
-        href="https://t.me/Nikolai_Perepichko"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 bg-[#0088cc] hover:bg-[#0099dd] text-white rounded-full p-4 shadow-lg transition-all duration-300 z-50"
-      >
-        <svg
-          className="w-6 h-6"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.52.36-.99.53-1.41.52-.46-.01-1.35-.26-2.01-.48-.81-.27-1.46-.42-1.4-.88.03-.24.37-.49 1.03-.74 4.04-1.76 6.73-2.92 8.07-3.48 3.84-1.61 4.64-1.89 5.17-1.9.11 0 .37.03.54.17.14.12.18.28.2.45-.02.14-.01.3-.02.43z"/>
-        </svg>
-      </a>
-
-      {selectedService && (
-        <ServiceModal
-          service={selectedService}
-          onClose={handleCloseModal}
-          currency={currency}
-          usdRate={usdRate}
-        />
-      )}
-      
+      {/* Modals */}
       {showContactForm && (
         <ContactForm 
           onClose={() => setShowContactForm(false)} 
-          onPrivacyClick={handlePrivacyPolicyClick}
+          onPrivacyClick={() => {
+            setShowContactForm(false);
+            setShowPrivacyPolicy(true);
+          }}
         />
       )}
-      
-      {selectedPackage && (
-        <PackageOrderForm
-          packageName={selectedPackage.name}
-          packageDescription={selectedPackage.description}
-          price={selectedPackage.price}
-          onClose={closeModal}
-          onSubmit={handlePackageSubmit}
-          currency={currency}
-          usdRate={usdRate}
+
+      {showAuditForm && (
+        <AuditForm 
+          onClose={() => setShowAuditForm(false)}
+          onPrivacyClick={() => {
+            setShowAuditForm(false);
+            setShowPrivacyPolicy(true);
+          }}
         />
       )}
-      
+
       {showPrivacyPolicy && (
-        <PrivacyPolicy
-          onClose={handleClosePrivacyPolicy}
-        />
+        <PrivacyPolicy onClose={() => setShowPrivacyPolicy(false)} />
       )}
+    </div>
+  );
+}
+
+// Audit Form Component
+function AuditForm({ onClose, onPrivacyClick }: { onClose: () => void; onPrivacyClick: () => void }) {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    contact: '',
+    process: ''
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('/api/submit-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'audit',
+          service: 'Экспресс-аудит процесса (5000₽)',
+          name: formData.name,
+          contact: formData.contact,
+          description: formData.process
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to send');
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Произошла ошибка. Попробуйте связаться через Telegram.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-[#12121A] rounded-2xl p-6 max-w-md w-full relative border border-white/10">
+        <button onClick={onClose} className="absolute right-4 top-4 text-gray-400 hover:text-white">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {!isSubmitted ? (
+          <>
+            <div className="badge mb-3">5 000 ₽ / $80</div>
+            <h2 className="text-xl font-bold mb-2">Экспресс-аудит процесса</h2>
+            <p className="text-gray-400 text-sm mb-5">
+              Опишите процесс для автоматизации. Результат — в тот же день.
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Имя</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="input"
+                  required
+                  placeholder="Ваше имя"
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Telegram / Телефон</label>
+                <input
+                  type="text"
+                  value={formData.contact}
+                  onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                  className="input"
+                  required
+                  placeholder="@username или +7..."
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Какой процесс разобрать?</label>
+                <textarea
+                  value={formData.process}
+                  onChange={(e) => setFormData({ ...formData, process: e.target.value })}
+                  className="input min-h-[80px] resize-none"
+                  required
+                  placeholder="Обработка заявок, учёт на складе..."
+                  disabled={isLoading}
+                />
+              </div>
+              
+              <button type="submit" className="btn btn-accent w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Отправка...
+                  </span>
+                ) : 'Заказать аудит'}
+              </button>
+              
+              <p className="text-xs text-gray-500 text-center">
+                Нажимая кнопку, вы соглашаетесь с{' '}
+                <button type="button" onClick={onPrivacyClick} className="text-blue-400 hover:underline">
+                  политикой конфиденциальности
+                </button>
+              </p>
+            </form>
+          </>
+        ) : (
+          <div className="text-center py-6">
+            <div className="text-4xl mb-3">✅</div>
+            <h2 className="text-xl font-bold mb-2">Заявка отправлена!</h2>
+            <p className="text-gray-400 text-sm mb-4">
+              Свяжусь в течение 2 часов в рабочее время.
+            </p>
+            <button onClick={onClose} className="btn btn-secondary">
+              Закрыть
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

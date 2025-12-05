@@ -1,9 +1,17 @@
+// Type for service includes
+interface ServiceIncludes {
+  [key: string]: string;
+}
+
 export interface Service {
-  title: string;
-  description: string;
-  includes: string[];
-  priceRub: number;
+  id: string;
+  icon: string;
+  titleKey: string;
+  descriptionKey: string;
+  includes: string[] | ServiceIncludes; // Can be array or object with string values
+  price: number;
+  priceRub: number; // For backward compatibility
   forWhom: string[];
-  modalTitle?: string;
-  modalDescription?: string;
+  modalTitleKey: string;
+  modalDescriptionKey: string;
 }

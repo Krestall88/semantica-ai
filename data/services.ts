@@ -2,118 +2,145 @@ import { Service } from '@/types/service';
 
 export const services: Service[] = [
   {
-    title: "💻 Сайт под ключ",
-    description: "Создадим сайт любой сложности — от одностраничника до системы с CRM и базой данных. Без кода. За 7 дней.",
+    id: 'website',
+    icon: '💻',
+    titleKey: 'services.website.title',
+    descriptionKey: 'services.website.description',
     includes: [
-      "Индивидуальный дизайн",
-      "Сборка на no-code/low-code платформе",
-      "Интеграции: CRM, формы, аналитика, оплата",
-      "Наполнение контентом",
-      "Хостинг и базовая SEO",
-      "Поддержка 7 дней"
+      'services.website.includes.design',
+      'services.website.includes.platform',
+      'services.website.includes.integrations',
+      'services.website.includes.content',
+      'services.website.includes.hosting',
+      'services.website.includes.support'
     ],
+    price: 25000,
     priceRub: 45000,
     forWhom: [
-      "Эксперты и консультанты",
-      "Онлайн-школы и коучи",
-      "Малый и средний бизнес"
+      'services.audience.experts',
+      'services.audience.online_schools',
+      'services.audience.small_business',
+      'services.audience.personal_brand'
     ],
-    modalTitle: "Сайт под ключ — от лендинга до платформы с личным кабинетом",
-    modalDescription: "Лендинг, визитка, многостраничник или сайт с личным кабинетом, админкой, базой данных и интеграциями — без программирования."
+    modalTitleKey: 'services.website.modal_title',
+    modalDescriptionKey: 'services.website.modal_description'
   },
   {
-    title: "🤖 AI Контент-менеджмент",
-    description: "Генерация и публикация постов, статей и идей — без вашей вовлечённости.",
+    id: 'content',
+    icon: '🤖',
+    titleKey: 'services.content.title',
+    descriptionKey: 'services.content.description',
     includes: [
-      "Подбор тем и рубрик",
-      "Генерация постов и статей",
-      "SEO-оптимизация",
-      "Визуалы (опционально)",
-      "Автопостинг в Telegram, VK, Instagram"
+      'services.content.includes.topics',
+      'services.content.includes.generation',
+      'services.content.includes.seo',
+      'services.content.includes.visuals',
+      'services.content.includes.autoposting'
     ],
+    price: 15000,
     priceRub: 25000,
     forWhom: [
-      "Эксперты и блогеры",
-      "Контент-маркетологи",
-      "Онлайн-школы"
+      'services.audience.experts',
+      'services.audience.marketers',
+      'services.audience.online_schools',
+      'services.audience.infobusiness',
+      'services.audience.personal_brand'
     ],
-    modalTitle: "Контент от ИИ — создаём и публикуем за вас",
-    modalDescription: "ИИ создает контент по вашей теме, пишет тексты и публикует их в соцсети автоматически. Работает 24/7."
+    modalTitleKey: 'services.content.modal_title',
+    modalDescriptionKey: 'services.content.modal_description'
   },
   {
-    title: "🤝 AI-ассистент",
-    description: "Помогает отвечать, консультировать, собирать заявки и поддерживать клиентов.",
+    id: 'assistant',
+    icon: '🤝',
+    titleKey: 'services.assistant.title',
+    descriptionKey: 'services.assistant.description',
     includes: [
-      "Настройка логики и автоответов",
-      "Интеграция с Telegram / WhatsApp / сайтом",
-      "Сценарии под вашу нишу",
-      "Сбор заявок, запись, консультации",
-      "Интеграция с Google Sheets или CRM"
+      'services.assistant.includes.setup',
+      'services.assistant.includes.integration',
+      'services.assistant.includes.scenarios',
+      'services.assistant.includes.leads',
+      'services.assistant.includes.training'
     ],
+    price: 20000,
+    priceRub: 35000,
+    forWhom: [
+      'services.audience.infobusiness',
+      'services.audience.consultants',
+      'services.audience.service_companies',
+      'services.audience.small_business',
+      'services.audience.online_schools'
+    ],
+    modalTitleKey: 'services.assistant.modal_title',
+    modalDescriptionKey: 'services.assistant.modal_description'
+  },
+  {
+    id: 'branding',
+    icon: '🎨',
+    titleKey: 'services.branding.title',
+    descriptionKey: 'services.branding.description',
+    includes: [
+      'services.branding.includes.covers',
+      'services.branding.includes.templates',
+      'services.branding.includes.guide',
+      'services.branding.includes.avatar',
+      'services.branding.includes.generation'
+    ],
+    price: 10000,
+    priceRub: 15000,
+    forWhom: [
+      'services.audience.personal_brand',
+      'services.audience.startups',
+      'services.audience.small_business',
+      'services.audience.experts'
+    ],
+    modalTitleKey: 'services.branding.modal_title',
+    modalDescriptionKey: 'services.branding.modal_description'
+  },
+  {
+    id: 'analytics',
+    icon: '📈',
+    titleKey: 'services.analytics.title',
+    descriptionKey: 'services.analytics.description',
+    includes: [
+      'services.analytics.includes.dashboards',
+      'services.analytics.includes.data',
+      'services.analytics.includes.forecasting',
+      'services.analytics.includes.integration',
+      'services.analytics.includes.automation'
+    ],
+    price: 18000,
     priceRub: 30000,
     forWhom: [
-      "Онлайн-школы",
-      "Бизнесы с повторяющимися запросами",
-      "Владельцы, которые хотят \"автоотдел продаж\""
+      'services.audience.marketers',
+      'services.audience.analysts',
+      'services.audience.managers',
+      'services.audience.enterprise',
+      'services.audience.small_business'
     ],
-    modalTitle: "ИИ-ассистент — чат-бот и помощник в одном",
-    modalDescription: "AI-помощник, который работает за вас: отвечает на вопросы, собирает данные и направляет клиентов."
+    modalTitleKey: 'services.analytics.modal_title',
+    modalDescriptionKey: 'services.analytics.modal_description'
   },
   {
-    title: "⚙️ Бизнес-автоматизация",
-    description: "CRM, таблицы, Notion, рассылки и учёт — всё в одной системе, без программистов.",
+    id: 'custom',
+    icon: '🚀',
+    titleKey: 'services.custom.title',
+    descriptionKey: 'services.custom.description',
     includes: [
-      "Аудит процессов и сценариев",
-      "Подбор и настройка CRM / Airtable / Notion",
-      "Интеграции: Telegram, Email, Sheets",
-      "Построение автоматических цепочек",
-      "Обучение команды"
+      'services.custom.includes.analysis',
+      'services.custom.includes.tools',
+      'services.custom.includes.implementation',
+      'services.custom.includes.training',
+      'services.custom.includes.support'
     ],
-    priceRub: 80000,
+    price: 30000,
+    priceRub: 50000,
     forWhom: [
-      "Малый и средний бизнес",
-      "Онлайн-агентства",
-      "Команды от 2+ человек"
+      'services.audience.complex_business',
+      'services.audience.startups',
+      'services.audience.enterprise',
+      'services.audience.small_business'
     ],
-    modalTitle: "Автоматизируем процессы без кода",
-    modalDescription: "Анализируем процессы, подбираем решения и внедряем под ключ — на no-code. Ваш бизнес работает, даже когда вы не онлайн."
-  },
-  {
-    title: "🎨 AI-визуальный брендинг",
-    description: "AI-обложки, баннеры, шаблоны и стиль — без дизайнера и брифа.",
-    includes: [
-      "Обложки и баннеры (3–5 шт.)",
-      "Шаблоны карточек, сторис",
-      "Цветовая палитра и шрифты",
-      "Мини-гайд для контентщика",
-      "Визуальное единое оформление"
-    ],
-    priceRub: 45000,
-    forWhom: [
-      "Эксперты и коучи",
-      "Онлайн-продукты",
-      "Тем, кто \"хочет выглядеть дорого\" без дизайнера"
-    ],
-    modalTitle: "Стильный визуал для соцсетей и курсов",
-    modalDescription: "Создаём уникальный визуальный стиль с помощью нейросетей: от баннеров до обложек под продукт. Быстро и в одном стиле."
-  },
-  {
-    title: "📷 AI-фотосессия и аватары",
-    description: "До 10 образов под стиль и задачу — без студии, за 1 день.",
-    includes: [
-      "До 10 AI-портретов в разных стилях",
-      "Генерация на основе ваших фото",
-      "Адаптация под Instagram / Telegram",
-      "Аватар-форматы + обрезки",
-      "Поддержка по выбору образа"
-    ],
-    priceRub: 10000,
-    forWhom: [
-      "Эксперты и блогеры",
-      "Курсы и наставники",
-      "Все, кому нужен профессиональный онлайн-образ"
-    ],
-    modalTitle: "AI-портреты — для профиля, обложек и курсов",
-    modalDescription: "Индивидуальные AI-портреты по вашим фото — для аватаров, соцсетей, презентаций и онлайн-курсов."
+    modalTitleKey: 'services.custom.modal_title',
+    modalDescriptionKey: 'services.custom.modal_description'
   }
 ];
