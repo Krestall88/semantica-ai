@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ContactForm } from '../components/ContactForm';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
@@ -10,6 +10,11 @@ export default function Home() {
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [showAuditForm, setShowAuditForm] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const [imageModal, setImageModal] = useState<{
+    caseIndex: number;
+    imageIndex: number;
+  } | null>(null);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -22,6 +27,52 @@ export default function Home() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+   const openImageModal = (caseIndex: number, imageIndex: number) => {
+    setImageModal({ caseIndex, imageIndex });
+  };
+
+  const closeImageModal = () => {
+    setImageModal(null);
+  };
+
+  const showPrevImage = () => {
+    if (!imageModal) return;
+    const currentCase = cases[imageModal.caseIndex];
+    const total = currentCase.images.length;
+    const nextIndex = (imageModal.imageIndex - 1 + total) % total;
+    setImageModal({ ...imageModal, imageIndex: nextIndex });
+  };
+
+  const showNextImage = () => {
+    if (!imageModal) return;
+    const currentCase = cases[imageModal.caseIndex];
+    const total = currentCase.images.length;
+    const nextIndex = (imageModal.imageIndex + 1) % total;
+    setImageModal({ ...imageModal, imageIndex: nextIndex });
+  };
+
+  useEffect(() => {
+    if (!imageModal) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeImageModal();
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        showPrevImage();
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        showNextImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [imageModal]);
 
   // Кейсы - обновленные по вашему описанию
   const cases = [
@@ -77,7 +128,7 @@ export default function Home() {
       id: 'documents',
       title: 'Модуль документооборота',
       tag: 'Документооборот',
-      description: 'MVP модуля для управления документами с ролями, статусами и маршрутами согласования.',
+      description: 'Модуль для управления документами с ролями, статусами и маршрутами согласования.',
       features: [
         'Загрузка и хранение документов',
         'Аккуратная структура разделов',
@@ -236,7 +287,7 @@ export default function Home() {
                 </h1>
                 
                 <p className="text-lg text-gray-400 mb-8 leading-relaxed">
-                  Создаю управленческие системы, которые закрывают реальные процессы компании: заявки, производство, логистика, задачи, аналитика, контроль сотрудников, автоматизации и AI-модули.
+                  Создаём управленческие системы, которые закрывают реальные процессы компании: заявки, производство, логистика, задачи, аналитика, контроль сотрудников, автоматизации и AI-модули.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
@@ -277,7 +328,7 @@ export default function Home() {
                     {/* Stats */}
                     <div className="grid grid-cols-2 gap-4 mt-6">
                       <div className="bg-white/5 rounded-xl p-4 text-center">
-                        <div className="text-3xl font-bold text-blue-400">15+</div>
+                        <div className="text-3xl font-bold text-blue-400">7+</div>
                         <div className="text-sm text-gray-400">лет опыта</div>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 text-center">
@@ -285,7 +336,7 @@ export default function Home() {
                         <div className="text-sm text-gray-400">дней до MVP</div>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 text-center">
-                        <div className="text-3xl font-bold text-green-400">50+</div>
+                        <div className="text-3xl font-bold text-green-400">20+</div>
                         <div className="text-sm text-gray-400">проектов</div>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 text-center">
@@ -413,21 +464,16 @@ export default function Home() {
                         {caseItem.images.map((img, i) => (
                           <div 
                             key={i} 
-                            className="relative bg-white/5 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center border border-white/10"
+                            className="relative bg-white/5 rounded-xl overflow-hidden aspect-[4/3] border border-white/10 cursor-zoom-in hover:border-blue-500/60 transition-colors"
+                            onClick={() => openImageModal(index, i)}
                           >
-                            {/* Placeholder for images */}
-                            <div className="text-center p-4">
-                              <div className="text-3xl mb-2 opacity-30">🖼️</div>
-                              <p className="text-xs text-gray-500">{img}</p>
-                            </div>
-                            {/* When you add real images, use this:
                             <Image 
                               src={`/cases/${caseItem.id}/${img}`}
                               alt={`${caseItem.title} - скриншот ${i + 1}`}
                               fill
+                              sizes="(min-width: 1024px) 33vw, 100vw"
                               className="object-cover"
                             />
-                            */}
                           </div>
                         ))}
                       </div>
@@ -510,40 +556,6 @@ export default function Home() {
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-400">3 месяца</div>
                   <div className="text-sm text-gray-400">от 250 000 ₽</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* About Me Section */}
-        <section className="py-16 bg-black/30">
-          <div className="container-custom">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold mb-3">Кто создаёт ваши системы</h2>
-              </div>
-
-              <div className="card card-highlight p-6 md:p-8">
-                <div className="flex flex-col md:flex-row gap-6 items-start">
-                  <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl flex-shrink-0">
-                    👨‍💻
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-1">Николай Перепичко</h3>
-                    <p className="text-blue-400 text-sm mb-4">Основатель SemanticaAI</p>
-                    
-                    <div className="space-y-3 text-gray-300 text-sm">
-                      <p><strong className="text-white">15 лет опыта</strong> в управлении, логистике и оптимизации процессов.</p>
-                      <p>Создал десятки операционных систем для производства, логистики, образования, клининга и сервиса.</p>
-                    </div>
-
-                    <div className="mt-5 p-4 bg-white/5 rounded-lg border border-white/10">
-                      <p className="text-gray-400 text-sm">
-                        Никакой бюрократии. Все решения принимаются быстро, изменения внедряются в тот же день.
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -641,6 +653,63 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Case Images Modal */}
+        {imageModal && (() => {
+          const currentCase = cases[imageModal.caseIndex];
+          const currentImage = currentCase.images[imageModal.imageIndex];
+          return (
+            <div
+              className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center px-4"
+              onClick={closeImageModal}
+            >
+              <div
+                className="relative max-w-5xl w-full max-h-[90vh]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={closeImageModal}
+                  className="absolute -top-10 right-0 text-gray-400 hover:text-white"
+                  aria-label="Закрыть"
+                >
+                  ✕
+                </button>
+                <div className="relative w-full aspect-video bg-[#050509] rounded-2xl overflow-hidden border border-white/20">
+                  <Image
+                    src={`/cases/${currentCase.id}/${currentImage}`}
+                    alt={`${currentCase.title} - скриншот`}
+                    fill
+                    sizes="100vw"
+                    className="object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={showPrevImage}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full w-9 h-9 flex items-center justify-center text-lg"
+                    aria-label="Предыдущий скриншот"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    onClick={showNextImage}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full w-9 h-9 flex items-center justify-center text-lg"
+                    aria-label="Следующий скриншот"
+                  >
+                    ›
+                  </button>
+                </div>
+                <div className="mt-3 flex items-center justify-between text-xs text-gray-400">
+                  <div className="truncate mr-2">{currentCase.title}</div>
+                  <div>
+                    {imageModal.imageIndex + 1} / {currentCase.images.length}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Contacts Section */}
         <section id="contacts" className="py-16 bg-black/30">
