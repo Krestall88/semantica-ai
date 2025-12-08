@@ -1,9 +1,79 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { ContactForm } from '../components/ContactForm';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
+
+// Кейсы - обновленные по вашему описанию
+const cases = [
+  {
+    id: 'cleaning',
+    title: 'Система управления для клининговой компании',
+    tag: 'B2B Сервис',
+    description:
+      'Внутренняя система контроля и учёта для клининговой компании, работающей с промышленными и коммерческими объектами.',
+    features: [
+      'Учет объектов и чек-листы на основе техкарт',
+      'Заявки от заказчика через простую форму',
+      'Ежедневные чек-листы менеджера с фотоотчётами',
+      'Учёт инвентаря и химии',
+      'Telegram-уведомления о просрочках',
+      'Отчёты и история всех действий'
+    ],
+    result:
+      'Руководство видит всё: от заявок до химии. Менеджеры не теряются и не забывают. Качество уборки подтверждено фактами.',
+    images: ['cleaning-1.jpg', 'cleaning-2.jpg', 'cleaning-3.jpg']
+  },
+  {
+    id: 'production',
+    title: 'Производственные журналы (хлебозавод)',
+    tag: 'Производство',
+    description: 'Цифровизация производственных журналов для контроля ежедневных процессов на производстве.',
+    features: [
+      'Удобный календарь и навигация по датам',
+      'Журналы температуры и состояния оборудования',
+      'Журнал здоровья сотрудников',
+      'Электронная подпись записей',
+      'Экспорт в PDF и архив за любой день',
+      'Интеграции с 1С, весами, датчиками'
+    ],
+    result: 'Цифровизация 21 журнала, устранение ошибок ручного заполнения, прозрачность смены для руководителя.',
+    images: ['production-1.jpg', 'production-2.jpg', 'production-3.jpg']
+  },
+  {
+    id: 'distribution',
+    title: 'Система снабжения и дистрибуции продуктов',
+    tag: 'Логистика',
+    description: 'Цифровая система для компаний по снабжению и дистрибуции продуктов питания.',
+    features: [
+      'Заказ продукции с завода',
+      'Приём товара на складе с контролем',
+      'Работа агентов с остатками и сроками',
+      'Подготовка заказов и отгрузка',
+      'Мобильное приложение для водителей',
+      'Аналитика и финансы в одном отчёте'
+    ],
+    result: 'Единая система вместо Bitrix, WhatsApp и Excel. Полный контроль от заказа до доставки.',
+    images: ['distribution-1.jpg', 'distribution-2.jpg', 'distribution-3.jpg']
+  },
+  {
+    id: 'documents',
+    title: 'Модуль документооборота',
+    tag: 'Документооборот',
+    description: 'Модуль для управления документами с ролями, статусами и маршрутами согласования.',
+    features: [
+      'Загрузка и хранение документов',
+      'Аккуратная структура разделов',
+      'Роли и уровни доступа',
+      'Статусы и движение документов',
+      'Маршруты согласования',
+      'Журнал действий и событий'
+    ],
+    result: 'Все документы в одном месте с контролем версий, доступов и сроков согласования.',
+    images: ['documents-1.jpg', 'documents-2.jpg', 'documents-3.jpg']
+  }
+];
 
 export default function Home() {
   const [showContactForm, setShowContactForm] = useState(false);
@@ -28,29 +98,29 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-   const openImageModal = (caseIndex: number, imageIndex: number) => {
+   const openImageModal = useCallback((caseIndex: number, imageIndex: number) => {
     setImageModal({ caseIndex, imageIndex });
-  };
+  }, []);
 
-  const closeImageModal = () => {
+  const closeImageModal = useCallback(() => {
     setImageModal(null);
-  };
+  }, []);
 
-  const showPrevImage = () => {
+  const showPrevImage = useCallback(() => {
     if (!imageModal) return;
     const currentCase = cases[imageModal.caseIndex];
     const total = currentCase.images.length;
     const nextIndex = (imageModal.imageIndex - 1 + total) % total;
     setImageModal({ ...imageModal, imageIndex: nextIndex });
-  };
+  }, [imageModal]);
 
-  const showNextImage = () => {
+  const showNextImage = useCallback(() => {
     if (!imageModal) return;
     const currentCase = cases[imageModal.caseIndex];
     const total = currentCase.images.length;
     const nextIndex = (imageModal.imageIndex + 1) % total;
     setImageModal({ ...imageModal, imageIndex: nextIndex });
-  };
+  }, [imageModal]);
 
   useEffect(() => {
     if (!imageModal) return;
@@ -72,75 +142,7 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [imageModal]);
-
-  // Кейсы - обновленные по вашему описанию
-  const cases = [
-    {
-      id: 'cleaning',
-      title: 'Система управления для клининговой компании',
-      tag: 'B2B Сервис',
-      description: 'Внутренняя система контроля и учёта для клининговой компании, работающей с промышленными и коммерческими объектами.',
-      features: [
-        'Учет объектов и чек-листы на основе техкарт',
-        'Заявки от заказчика через простую форму',
-        'Ежедневные чек-листы менеджера с фотоотчётами',
-        'Учёт инвентаря и химии',
-        'Telegram-уведомления о просрочках',
-        'Отчёты и история всех действий'
-      ],
-      result: 'Руководство видит всё: от заявок до химии. Менеджеры не теряются и не забывают. Качество уборки подтверждено фактами.',
-      images: ['cleaning-1.jpg', 'cleaning-2.jpg', 'cleaning-3.jpg']
-    },
-    {
-      id: 'production',
-      title: 'Производственные журналы (хлебозавод)',
-      tag: 'Производство',
-      description: 'Цифровизация производственных журналов для контроля ежедневных процессов на производстве.',
-      features: [
-        'Удобный календарь и навигация по датам',
-        'Журналы температуры и состояния оборудования',
-        'Журнал здоровья сотрудников',
-        'Электронная подпись записей',
-        'Экспорт в PDF и архив за любой день',
-        'Интеграции с 1С, весами, датчиками'
-      ],
-      result: 'Цифровизация 21 журнала, устранение ошибок ручного заполнения, прозрачность смены для руководителя.',
-      images: ['production-1.jpg', 'production-2.jpg', 'production-3.jpg']
-    },
-    {
-      id: 'distribution',
-      title: 'Система снабжения и дистрибуции продуктов',
-      tag: 'Логистика',
-      description: 'Цифровая система для компаний по снабжению и дистрибуции продуктов питания.',
-      features: [
-        'Заказ продукции с завода',
-        'Приём товара на складе с контролем',
-        'Работа агентов с остатками и сроками',
-        'Подготовка заказов и отгрузка',
-        'Мобильное приложение для водителей',
-        'Аналитика и финансы в одном отчёте'
-      ],
-      result: 'Единая система вместо Bitrix, WhatsApp и Excel. Полный контроль от заказа до доставки.',
-      images: ['distribution-1.jpg', 'distribution-2.jpg', 'distribution-3.jpg']
-    },
-    {
-      id: 'documents',
-      title: 'Модуль документооборота',
-      tag: 'Документооборот',
-      description: 'Модуль для управления документами с ролями, статусами и маршрутами согласования.',
-      features: [
-        'Загрузка и хранение документов',
-        'Аккуратная структура разделов',
-        'Роли и уровни доступа',
-        'Статусы и движение документов',
-        'Маршруты согласования',
-        'Журнал действий и событий'
-      ],
-      result: 'Все документы в одном месте с контролем версий, доступов и сроков согласования.',
-      images: ['documents-1.jpg', 'documents-2.jpg', 'documents-3.jpg']
-    }
-  ];
+  }, [imageModal, closeImageModal, showPrevImage, showNextImage]);
 
   // Услуги
   const services = [
@@ -172,39 +174,21 @@ export default function Home() {
   const workStages = [
     {
       num: '01',
-      title: 'Описание процессов',
-      desc: 'Вы описываете свои процессы голосом или текстом. Мы задаём уточняющие вопросы.',
-      duration: '1-2 дня'
-    },
-    {
-      num: '02',
-      title: 'План проекта и КП',
-      desc: 'Разрабатываем план проекта, определяем модули и готовим коммерческое предложение.',
-      duration: '2-3 дня'
-    },
-    {
-      num: '03',
-      title: 'Согласование ТЗ',
-      desc: 'После согласования КП готовим детальное техническое задание с описанием всех функций.',
+      title: 'Проектирование',
+      desc: 'Согласуем MVP: что делаем сейчас, что позже.',
       duration: '3-5 дней'
     },
     {
-      num: '04',
-      title: 'Договор и старт',
-      desc: 'Подписываем договор, получаем предоплату и начинаем разработку системы.',
-      duration: '1 день'
-    },
-    {
-      num: '05',
-      title: 'Разработка MVP',
-      desc: 'Создаём первую рабочую версию. Вы тестируете, мы дорабатываем по обратной связи.',
+      num: '02',
+      title: 'Разработка и интеграции',
+      desc: 'Делаем, показываем промежуточные версии, подключаем ботов и API.',
       duration: '10-20 дней'
     },
     {
-      num: '06',
-      title: 'Внедрение и поддержка',
-      desc: 'Запускаем систему, обучаем команду. Бесплатное сопровождение после внедрения.',
-      duration: '1-3 мес'
+      num: '03',
+      title: 'Запуск и сопровождение',
+      desc: 'Запускаем, обучаем, правим и сопровождаем 1-3 месяца бесплатно.',
+      duration: '1-3 месяца'
     }
   ];
 

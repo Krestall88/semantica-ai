@@ -10,7 +10,7 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 // Очень упрощённый тип для мок-клиента
-export type AnySupabaseClient = SupabaseClient<any, any, any> | ReturnType<typeof createMockClient>;
+export type AnySupabaseClient = SupabaseClient | ReturnType<typeof createMockClient>;
 
 function createMockClient() {
   return {

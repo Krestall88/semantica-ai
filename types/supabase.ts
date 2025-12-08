@@ -49,7 +49,7 @@ export const leadHistorySchema = z.object({
   id: z.string().uuid(),
   lead_id: z.string().uuid(),
   type: z.string(),
-  data: z.record(z.any()).optional(),
+  data: z.record(z.string(), z.any()).optional(),
   created_at: z.string(),
 });
 

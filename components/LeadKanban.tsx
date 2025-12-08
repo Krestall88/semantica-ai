@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { DndContext, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useLeadsStore, LeadWithMeta } from "../lib/leads-store";
 import { leadStageIds, LeadStageId } from "../types/supabase";
@@ -27,7 +27,7 @@ export const LeadKanban: React.FC = () => {
     }),
   );
 
-  const { leads, tasks, moveLeadToStage, setActiveLead, activeLeadId } = useLeadsStore();
+  const { leads, tasks, moveLeadToStage, setActiveLead } = useLeadsStore();
 
   const leadsByStage: Record<LeadStageId, LeadWithMeta[]> = {
     new: [],
@@ -47,7 +47,7 @@ export const LeadKanban: React.FC = () => {
     leadsByStage[lead.stage].push(enriched);
   }
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
 

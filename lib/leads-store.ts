@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { Lead, LeadTask, LeadStageId, leadStageIds } from "../types/supabase";
+import { Lead, LeadTask, LeadStageId } from "../types/supabase";
 import { mockLeads, mockLeadTasks } from "../mocks/leads";
 import { produce } from "immer";
 import { nanoid } from "nanoid";
@@ -41,7 +41,7 @@ const initialState: State = {
   filter: { search: "", stage: "all" },
 };
 
-export const useLeadsStore = create<State & Actions>()((set, get) => ({
+export const useLeadsStore = create<State & Actions>()((set) => ({
   ...initialState,
 
   setActiveLead: (id) => set({ activeLeadId: id }),

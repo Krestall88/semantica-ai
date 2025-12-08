@@ -3,7 +3,7 @@
 import React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useLeadsStore } from "../lib/leads-store";
-import { X, CalendarDays, Phone, Mail, FileText, CheckCircle2, Clock3, Banknote } from "lucide-react";
+import { X, CalendarDays, Phone, Mail, CheckCircle2, Clock3, Banknote } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 
