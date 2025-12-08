@@ -436,6 +436,9 @@ export default function Home() {
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold mb-3">Кейсы</h2>
               <p className="text-lg text-gray-400">Реальные проекты, реальные результаты</p>
+              <p className="text-sm text-gray-400 mt-2">
+                Подробнее о внедрениях — в нашей группе Telegram, ссылка в блоке «Контакты».
+              </p>
             </div>
 
             <div className="space-y-8">
@@ -704,7 +707,7 @@ export default function Home() {
             </div>
 
             <div className="max-w-2xl mx-auto">
-              <div className="grid sm:grid-cols-3 gap-4 mb-8">
+              <div className="grid sm:grid-cols-4 gap-4 mb-8">
                 <a 
                   href="https://t.me/Nikolai_Perepichko" 
                   target="_blank" 
@@ -734,6 +737,17 @@ export default function Home() {
                   <div className="text-3xl mb-3">✉️</div>
                   <h3 className="font-semibold text-sm mb-1">Email</h3>
                   <p className="text-purple-400 text-xs">perepichko.nik@gmail.com</p>
+                </a>
+
+                <a 
+                  href="https://t.me/SemanticaAI/68" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="card p-5 text-center hover:border-cyan-500/50"
+                >
+                  <div className="text-3xl mb-3">👥</div>
+                  <h3 className="font-semibold text-sm mb-1">Группа в Telegram</h3>
+                  <p className="text-cyan-400 text-xs">Подробнее о внедрениях</p>
                 </a>
               </div>
 
