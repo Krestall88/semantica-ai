@@ -771,14 +771,7 @@ export default function Home() {
                 </a>
               </div>
 
-              <div className="text-center">
-                <button 
-                  onClick={() => setShowContactForm(true)}
-                  className="btn btn-primary btn-lg"
-                >
-                  Оставить заявку
-                </button>
-              </div>
+             
             </div>
           </div>
         </section>
