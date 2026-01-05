@@ -290,7 +290,7 @@ export default function Home() {
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
                   Индивидуальные операционные системы для бизнеса
                   <span className="block text-gray-400 text-xl md:text-2xl lg:text-3xl mt-4 font-normal">
-                    — под ваши процессы, без лишнего
+                    — мы закрываем хаос в операционке
                   </span>
                 </h1>
                 
@@ -415,24 +415,7 @@ export default function Home() {
             </div>
 
             <div className="grid lg:grid-cols-2 gap-6">
-              {/* Problems */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold mb-4 text-red-400">❌ Проблемы</h3>
-                {[
-                  'Данные в Excel, WhatsApp, Google Таблицах',
-                  'Сотрудники забывают, теряют, не фиксируют',
-                  'Каждый отдел работает в своей системе',
-                  'Процессы не прозрачны — руководитель всё тянет вручную',
-                  'Автоматизации отсутствуют или работают криво',
-                  'Bitrix/1C/Мегаплан: слишком сложно, много лишнего'
-                ].map((problem, i) => (
-                  <div key={i} className="problem-item">
-                    <span className="text-red-400 text-lg">✕</span>
-                    <span className="text-gray-300 text-sm">{problem}</span>
-                  </div>
-                ))}
-              </div>
-
+             
               {/* Solutions */}
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold mb-4 text-green-400">✓ Решения</h3>
@@ -447,6 +430,24 @@ export default function Home() {
                   <div key={i} className="solution-item">
                     <span className="text-green-400 text-lg">✓</span>
                     <span className="text-gray-300 text-sm">{solution}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Problems */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold mb-4 text-red-400">❌ Проблемы</h3>
+                {[
+                  'Данные в Excel, WhatsApp, Google Таблицах',
+                  'Сотрудники забывают, теряют, не фиксируют',
+                  'Каждый отдел работает в своей системе',
+                  'Процессы не прозрачны — руководитель всё тянет вручную',
+                  'Автоматизации отсутствуют или работают криво',
+                  'Bitrix/1C/Мегаплан: слишком сложно, много лишнего'
+                ].map((problem, i) => (
+                  <div key={i} className="problem-item">
+                    <span className="text-red-400 text-lg">✕</span>
+                    <span className="text-gray-300 text-sm">{problem}</span>
                   </div>
                 ))}
               </div>
@@ -560,14 +561,10 @@ export default function Home() {
               </div>
               <div className="flex gap-6">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">1 месяц</div>
-                  <div className="text-sm text-gray-400">на все проекты</div>
+                  <div className="text-2xl font-bold text-green-400">от 1 до 3 месяцев</div>
+                  <div className="text-sm text-gray-400">сроки обсуждаемы</div>
                 </div>
-                <div className="w-px bg-white/10"></div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">3 месяца</div>
-                  <div className="text-sm text-gray-400">от 250 000 ₽</div>
-                </div>
+               
               </div>
             </div>
           </div>
@@ -631,7 +628,6 @@ export default function Home() {
                       'Карту процесса',
                       'Выявленные узкие места',
                       'Точки автоматизации',
-                      'Видео-разбор (6–8 мин)',
                       'Оценку сроков и бюджета'
                     ].map((item, i) => (
                       <li key={i} className="flex items-center gap-2">
@@ -648,9 +644,9 @@ export default function Home() {
                   <div className="inline-block bg-white/5 rounded-xl p-6 border border-white/10">
                     <p className="text-gray-400 text-sm mb-1">Стоимость</p>
                     <div className="text-4xl font-bold mb-1">
-                      <span className="gradient-text">5 000 ₽</span>
+                      <span className="gradient-text">Бесплатно</span>
                     </div>
-                    <p className="text-gray-500 text-sm mb-6">или $80</p>
+                    <p className="text-gray-500 text-sm mb-6"> </p>
                     
                     <button 
                       onClick={() => setShowAuditForm(true)}
@@ -727,7 +723,7 @@ export default function Home() {
           <div className="container-custom">
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold mb-3">Контакты</h2>
-              <p className="text-lg text-gray-400">Свяжитесь удобным способом</p>
+              <p className="text-lg text-gray-400">Свяжитесь с нами</p>
             </div>
 
             <div className="max-w-2xl mx-auto">
@@ -876,7 +872,7 @@ function AuditForm({ onClose, onPrivacyClick }: { onClose: () => void; onPrivacy
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'audit',
-          service: 'Экспресс-аудит процесса (5000₽)',
+          service: 'Экспресс-аудит процесса',
           name: formData.name,
           contact: formData.contact,
           description: formData.process
@@ -904,7 +900,7 @@ function AuditForm({ onClose, onPrivacyClick }: { onClose: () => void; onPrivacy
 
         {!isSubmitted ? (
           <>
-            <div className="badge mb-3">5 000 ₽ / $80</div>
+            <div className="badge mb-3">Бесплатно</div>
             <h2 className="text-xl font-bold mb-2">Экспресс-аудит процесса</h2>
             <p className="text-gray-400 text-sm mb-5">
               Опишите процесс для автоматизации. Результат — в тот же день.
